@@ -8,7 +8,7 @@ import Composer from "./composer/Composer"
 const App: React.FC = () => {
     return (
         <Router>
-            <div className="w-full h-full bg-gradient-to-b from-gray-100 to-gray-200 select-none flex flex-col">
+            <div className="w-full min-h-screen h-full bg-gradient-to-b from-gray-100 to-gray-200 select-none flex flex-col">
                 <Header/>
                 <Switch>
                     <Route path="/authorization_callback">
