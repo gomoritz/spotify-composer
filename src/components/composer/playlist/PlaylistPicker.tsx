@@ -39,8 +39,8 @@ const PlaylistPicker: React.FC<Props> = ({ setIncludedPlaylists }) => {
 
     return (
         <>
-            <div className="max-w-screen-lg mx-auto grid
-            grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-10 p-8">
+            <div className="max-w-screen-xl w-full mx-auto grid
+            grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 px-8 py-2">
                 {playlists.map((playlist: any) =>
                     <PlaylistCard key={playlist.id}
                                   isSelected={selectedPlaylists.includes(playlist.id)}
