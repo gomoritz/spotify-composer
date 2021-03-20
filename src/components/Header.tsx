@@ -14,19 +14,20 @@ const Header: React.FC<Props> = () => {
             : "Login with Spotify"
 
     return (
-        <div className="w-full flex justify-between items-center
-        max-w-screen-xl mx-auto py-3 px-7 bg-emerald-500 shadow-sm">
-            <div>
-                <p className="text-xl font-bold tracking-tight text-white m-0 p-0">
-                    Spotify Playlist Composer
-                </p>
-                <p className="text-sm font-normal tracking-tight text-white opacity-75 -mt-1">
-                    by Inception Cloud
+        <div className="w-full bg-emerald-500 shadow-md z-50">
+            <div className="w-full flex justify-between items-center py-3 px-7 max-w-screen-lg mx-auto">
+                <div className="whitespace-nowrap flex-nowrap">
+                    <p className="text-xl font-bold tracking-tight text-white m-0 p-0">
+                        Spotify Playlist Composer
+                    </p>
+                    <p className="text-sm font-normal tracking-tight text-white opacity-75 -mt-1">
+                        by Inception Cloud
+                    </p>
+                </div>
+                <p className="bg-white px-3 py-1 rounded-md truncate ml-8">
+                    {buttonText}
                 </p>
             </div>
-            <p className="bg-white px-3 py-1 rounded-md">
-                {buttonText}
-            </p>
         </div>
     )
 }
