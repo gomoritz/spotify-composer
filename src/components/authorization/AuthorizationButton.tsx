@@ -11,7 +11,8 @@ const AuthorizationButton: React.FC<Props> = () => {
         window.location.href = "https://accounts.spotify.com/authorize" +
             "?client_id=" + constants.client_id +
             "&response_type=" + constants.response_type +
-            "&redirect_uri=" + constants.redirect_uri
+            "&redirect_uri=" + constants.redirect_uri +
+            "&scope=" + constants.scopes
     }
 
     return (
