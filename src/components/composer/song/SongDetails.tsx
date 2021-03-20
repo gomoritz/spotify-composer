@@ -7,7 +7,7 @@ type Props = {
 }
 
 const SongDetails: React.FC<Props> = ({ currentSong, x }) => {
-    const background = useTransform(x, [-150, 0, 150], ["#B91C1C99", "#000000", "#15803D99"])
+    const background = useTransform(x, [-150, 0, 150], ["rgb(95,15,15)", "#000000", "rgb(9,55,22)"])
     const dragGradientRef = useRef<HTMLDivElement | null>(null)
 
     background.onChange(value => {
