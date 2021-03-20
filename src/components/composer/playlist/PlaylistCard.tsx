@@ -38,7 +38,7 @@ const PlaylistCard: React.FC<Props> = ({ playlist, isSelected, togglePlaylist })
             onClick={() => togglePlaylist(playlist.id)}
         >
             <motion.div
-                className="absolute w-full h-full top-0 left-0 z-10 bg-black bg-opacity-50
+                className="absolute w-full h-full top-0 left-0 z-10 bg-black bg-opacity-30
                     flex justify-center items-center"
                 variants={overlayVariants}
             >
@@ -46,6 +46,7 @@ const PlaylistCard: React.FC<Props> = ({ playlist, isSelected, togglePlaylist })
                     xmlns="http://www.w3.org/2000/svg"
                     width="150"
                     height="150"
+                    style={{filter: "drop-shadow(0px 0px 5px rgba(0, 0, 0, .5))"}}
                 >
                     <motion.path
                         d="M38 74.707l24.647 24.646L116.5 45.5"
