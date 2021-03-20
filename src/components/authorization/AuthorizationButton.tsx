@@ -16,9 +16,8 @@ const AuthorizationButton: React.FC<Props> = () => {
     }
 
     return (
-        <motion.div className="bg-gradient-to-br from-green-400 to-green-500
-                    text-white text-md rounded-md py-2 px-5 shadow-sm cursor-pointer"
-                    whileHover={{ scale: 1.05 }}
+        <motion.div className="bg-green-500 text-white text-md rounded-md py-2 px-5 shadow-sm cursor-pointer"
+                    whileHover={{ scale: 1.1, backgroundColor: "#4ADE80" }}
                     whileTap={{ scale: 0.95 }}
                     onClick={requestAuthorization}
         >
