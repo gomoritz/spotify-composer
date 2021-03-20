@@ -22,5 +22,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-.idea/
+/.idea
 spotify-playlist-composer.iml
+
+/src/spotify/constants.ts
