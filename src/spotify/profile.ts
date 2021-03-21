@@ -1,6 +1,7 @@
 import { authorizationHeaders, getAccessToken } from "./authorization"
+import { Profile } from "../types/spotify"
 
-export async function getProfile(): Promise<any | null> {
+export async function getProfile(): Promise<Profile | null> {
     const accessToken = getAccessToken()
     if (!accessToken) return null
 

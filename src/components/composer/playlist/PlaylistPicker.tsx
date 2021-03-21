@@ -2,13 +2,14 @@ import React, { useEffect, useState } from "react"
 import { getPlaylists } from "../../../spotify/playlists"
 import PlaylistCard from "./PlaylistCard"
 import { motion } from "framer-motion"
+import { Playlist } from "../../../types/spotify"
 
 interface Props {
     setIncludedPlaylists: (playlists: string[]) => void
 }
 
 const PlaylistPicker: React.FC<Props> = ({ setIncludedPlaylists }) => {
-    const [playlists, setPlaylists] = useState<string[]>([])
+    const [playlists, setPlaylists] = useState<Playlist[]>([])
     const [selectedPlaylists, setSelectedPlaylists] = useState<string[]>([])
 
     useEffect(() => {
@@ -42,7 +43,7 @@ const PlaylistPicker: React.FC<Props> = ({ setIncludedPlaylists }) => {
         <>
             <div className="max-w-screen-lg w-full mx-auto mb-7 grid
             grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 px-8 py-7">
-                {playlists.map((playlist: any) =>
+                {playlists.map(playlist =>
                     <PlaylistCard key={playlist.id}
                                   isSelected={selectedPlaylists.includes(playlist.id)}
                                   playlist={playlist} togglePlaylist={togglePlaylist}/>

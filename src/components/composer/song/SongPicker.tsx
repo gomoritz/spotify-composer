@@ -5,10 +5,11 @@ import SongDragOverlay from "./SongDragOverlay"
 import SongDetails from "./SongDetails"
 import SongBackground from "./SongBackground"
 import useAsync from "../../../utils/useAsync"
+import { Song } from "../../../types/spotify"
 
 interface Props {
     includedPlaylists: string[]
-    setIncludedSongs: (songs: any[]) => void
+    setIncludedSongs: (songs: Song[]) => void
 }
 
 const SongPicker: React.FC<Props> = ({ includedPlaylists, setIncludedSongs }) => {
@@ -16,7 +17,7 @@ const SongPicker: React.FC<Props> = ({ includedPlaylists, setIncludedSongs }) =>
     const { result: songs, state } = useAsync(callback)
 
     const [index, setIndex] = useState(0)
-    const [taken, setTaken] = useState<any[]>([])
+    const [taken, setTaken] = useState<Song[]>([])
 
     const x = useMotionValue(0)
 

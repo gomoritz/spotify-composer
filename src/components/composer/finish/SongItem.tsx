@@ -1,7 +1,8 @@
 import React from "react"
+import { Song } from "../../../types/spotify"
 
 interface Props {
-    song: any
+    song: Song
 }
 
 const SongItem: React.FC<Props> = ({ song }) => {
@@ -15,7 +16,7 @@ const SongItem: React.FC<Props> = ({ song }) => {
             <div className="h-full flex flex-col flex-grow justify-center ml-2 mr-4 overflow-hidden">
                 <h1 className="text-md font-medium tracking-tight truncate">{song.track.name}</h1>
                 <p className="text-sm leading-4 font-light tracking-tight truncate">
-                    {song.track.artists.slice(0, 4).map((artist: any) => artist.name).join(", ")}
+                    {song.track.artists.slice(0, 4).map(artist => artist.name).join(", ")}
                 </p>
             </div>
             <p className="h-full flex flex-col justify-center text-right pr-3 tracking-tight">

@@ -1,8 +1,9 @@
 import { motion, useMotionValue, useTransform } from "framer-motion"
 import React from "react"
+import { Playlist } from "../../../types/spotify"
 
 interface Props {
-    playlist: any
+    playlist: Playlist
     isSelected: boolean
     togglePlaylist: (playlistId: string) => void
 }

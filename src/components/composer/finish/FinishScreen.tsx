@@ -2,9 +2,10 @@ import React, { useState } from "react"
 import SongItem from "./SongItem"
 import { addSongsToPlaylist, createPlaylist } from "../../../spotify/playlists"
 import FinishButton from "./FinishButton"
+import { Song } from "../../../types/spotify"
 
 interface Props {
-    songs: any[]
+    songs: Song[]
 }
 
 const FinishScreen: React.FC<Props> = ({ songs }) => {

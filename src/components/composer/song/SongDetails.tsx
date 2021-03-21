@@ -1,8 +1,9 @@
 import React, { useRef } from "react"
 import { motion, MotionValue, useTransform } from "framer-motion"
+import { Song } from "../../../types/spotify"
 
 type Props = {
-    currentSong: any
+    currentSong: Song
     x: MotionValue<number>
 }
 
@@ -17,7 +18,7 @@ const SongDetails: React.FC<Props> = ({ currentSong, x }) => {
     })
 
     const artists = currentSong.track.artists
-    const artistsText = artists.slice(0, 4).map((it: any) => it.name).join(", ") +
+    const artistsText = artists.slice(0, 4).map(it => it.name).join(", ") +
         (artists.length > 4 ? ` and ${artists.length - 4} more` : "")
 
     return <motion.div

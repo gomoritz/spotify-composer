@@ -1,8 +1,9 @@
 import { authorizationHeaders } from "./authorization"
 import { getProfile } from "./profile"
+import { Playlist, PlaylistResponse, Song } from "../types/spotify"
 
-export async function getPlaylists(next?: string): Promise<any[]> {
-    const response: any = await fetch(
+export async function getPlaylists(next?: string): Promise<Playlist[]> {
+    const response: PlaylistResponse = await fetch(
         next ?? "https://api.spotify.com/v1/me/playlists?limit=50",
         { headers: authorizationHeaders() }
     ).then(res => res.json()).catch(console.error)
@@ -15,21 +16,21 @@ export async function getPlaylists(next?: string): Promise<any[]> {
     return response.items
 }
 
-export async function getPlaylist(id: string): Promise<any> {
+export async function getPlaylist(id: string): Promise<Playlist> {
     return await fetch(
         "https://api.spotify.com/v1/playlists/" + id,
         { headers: authorizationHeaders() }
     ).then(res => res.json()).catch(console.error)
 }
 
-export async function getAllSongs(playlists: string[]): Promise<any[]> {
-    const result: any[] = []
-    const isAlreadyAdded = (song: any) => !!result.find(it =>
+export async function getAllSongs(playlists: string[]): Promise<Song[]> {
+    const result: Song[] = []
+    const isAlreadyAdded = (song: Song) => !!result.find(it =>
         it.track.id === song.track.id || it.track.external_ids.isrc === song.track.external_ids.isrc
     )
 
     for (let id of playlists) {
-        const playlist: any = await getPlaylist(id)
+        const playlist = await getPlaylist(id)
         for (let song of playlist.tracks.items) {
             if (isAlreadyAdded(song)) continue
             result.push(song)
@@ -38,8 +39,9 @@ export async function getAllSongs(playlists: string[]): Promise<any[]> {
     return result
 }
 
-export async function createPlaylist(): Promise<any> {
+export async function createPlaylist(): Promise<Playlist> {
     const profile = await getProfile()
+    if (!profile) throw new Error("User is not authenticated")
 
     return await fetch(
         `https://api.spotify.com/v1/users/${profile.id}/playlists`,
@@ -55,7 +57,7 @@ export async function createPlaylist(): Promise<any> {
     ).then(res => res.json()).catch(console.error)
 }
 
-export async function addSongsToPlaylist(playlistId: string, songs: any[]): Promise<any> {
+export async function addSongsToPlaylist(playlistId: string, songs: Song[]): Promise<any> {
     return await fetch(
         "https://api.spotify.com/v1/playlists/" + playlistId + "/tracks",
         {

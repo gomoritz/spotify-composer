@@ -1,6 +1,7 @@
 import React from "react"
+import { Song } from "../../../types/spotify"
 
-type Props = { currentSong: any }
+type Props = { currentSong: Song }
 
 const SongBackground: React.FC<Props> = ({ currentSong }) => {
     return (
