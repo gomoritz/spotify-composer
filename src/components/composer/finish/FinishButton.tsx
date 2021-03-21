@@ -20,7 +20,7 @@ const FinishButton: React.FC<Props> = ({ onClick, working }) => {
     return (
         <motion.div
             className="sticky bottom-6 left-0 mx-auto w-48 h-12 text-center px-5 py-2 bg-emerald-500 text-white text-lg
-                    shadow-md rounded-lg cursor-pointer border-2 border-emerald-400 overflow-hidden
+                    shadow-lg rounded-lg cursor-pointer border-2 border-emerald-400 overflow-hidden
                     flex justify-center items-center"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
