@@ -1,19 +1,27 @@
-import React from "react"
+import React, { useState } from "react"
 import SongItem from "./SongItem"
-import { motion } from "framer-motion"
 import { addSongsToPlaylist, createPlaylist } from "../../../spotify/playlists"
+import FinishButton from "./FinishButton"
 
 interface Props {
     songs: any[]
 }
 
 const FinishScreen: React.FC<Props> = ({ songs }) => {
+    const [working, setWorking] = useState(false)
+
     function finish() {
+        if (working) return
+        setWorking(true)
+
+        const error = (error: any) => {
+            console.error(error)
+            setWorking(false)
+        }
+
         createPlaylist().then(playlist => {
-            addSongsToPlaylist(playlist.id, songs).then(() => {
-                console.info("done!")
-            })
-        })
+            addSongsToPlaylist(playlist.id, songs).catch(error)
+        }).catch(error)
     }
 
     return (
@@ -27,15 +35,7 @@ const FinishScreen: React.FC<Props> = ({ songs }) => {
             <div className="w-full my-10">
                 {songs.map(song => <SongItem key={song.track.id} song={song}/>)}
             </div>
-            <motion.div
-                className="sticky bottom-6 left-0 mx-auto px-5 py-2 bg-emerald-500 text-white text-lg
-                shadow-md rounded-lg cursor-pointer border-2 border-emerald-400"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={finish}
-            >
-                Create Playlist
-            </motion.div>
+            <FinishButton onClick={finish} working={working}/>
         </div>
     )
 }
