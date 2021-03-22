@@ -41,8 +41,8 @@ const FilterDropdown: React.FC<Props> = ({ current, options, setFilter }) => {
 					{expanded && (
 						<motion.div
 							animate={{ opacity: 1, y: 0 }}
-							initial={{ opacity: 0, y: 10 }}
-							exit={{ opacity: 0, y: 10 }}
+							initial={{ opacity: 0, y: -10 }}
+							exit={{ opacity: 0, y: -10 }}
 							transition={{ duration: 0.25 }}
 							className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
 							role="menu"
