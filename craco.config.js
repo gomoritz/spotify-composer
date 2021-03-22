@@ -1,3 +1,5 @@
+const CracoAlias = require("craco-alias")
+
 module.exports = {
     style: {
         postcss: {
@@ -6,5 +8,15 @@ module.exports = {
                 require("autoprefixer")
             ]
         }
-    }
+    },
+    plugins: [
+        {
+            plugin: CracoAlias,
+            options: {
+                source: "tsconfig",
+                baseUrl: "./src",
+                tsConfigPath: "./tsconfig.extend.json"
+            }
+        }
+    ]
 }
