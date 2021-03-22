@@ -23,11 +23,11 @@ jobs:
         REACT_APP_SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
     
     - name: 📂 Upload files
-      uses: SamKirkland/FTP-Deploy-Action@4.0.0
+      uses: SamKirkland/FTP-Deploy-Action@3.1.1
       with:
-        server: 45.85.219.34
-        username: ${{ secrets.FTP_USERNAME }}
-        password: ${{ secrets.FTP_PASSWORD }}
-        port: 22
+        ftp-server: 45.85.219.34
+        ftp-username: ${{ secrets.FTP_USERNAME }}
+        ftp-password: ${{ secrets.FTP_PASSWORD }}
+        ftp-port: 22
         local-dir: ./build/
         server-dir: /var/www/composer/
