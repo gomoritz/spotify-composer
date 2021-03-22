@@ -11,8 +11,8 @@ interface Props {
 	setIncludedPlaylists: (playlists: string[]) => void
 }
 
-const FilterOptions = ["all", "own", "other"]
-export type Filter = "all" | "own" | "other"
+const FilterOptions = ["all", "owned", "liked"]
+export type Filter = "all" | "owned" | "liked"
 
 const PlaylistPicker: React.FC<Props> = ({ setIncludedPlaylists }) => {
 	const [playlists, setPlaylists] = useState<Playlist[]>([])
@@ -32,8 +32,8 @@ const PlaylistPicker: React.FC<Props> = ({ setIncludedPlaylists }) => {
 
 	useEffect(() => {
 		setFilteredPlaylists(() => {
-			if (filter === "own") return playlists.filter(p => p.owner.id === profile?.id)
-			else if (filter === "other") return playlists.filter(p => p.owner.id !== profile?.id)
+			if (filter === "owned") return playlists.filter(p => p.owner.id === profile?.id)
+			else if (filter === "liked") return playlists.filter(p => p.owner.id !== profile?.id)
 			return playlists
 		})
 	}, [filter, playlists, profile?.id])

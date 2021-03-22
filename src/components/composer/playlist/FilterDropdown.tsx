@@ -27,7 +27,7 @@ const FilterDropdown: React.FC<Props> = ({ current, options, setFilter }) => {
 						aria-expanded="true"
 						aria-haspopup="true"
 					>
-						Show {current} playlists
+						{current[0].toUpperCase() + current.substr(1, current.length - 1)} playlists
 						<svg className="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
 							<path
 								fillRule="evenodd"
@@ -58,7 +58,7 @@ const FilterDropdown: React.FC<Props> = ({ current, options, setFilter }) => {
 												className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
 												key={option}
 											>
-												Show {option} playlists
+												{option[0].toUpperCase() + option.substr(1, option.length)} playlists
 											</p>
 										)
 								)}
