@@ -25,9 +25,9 @@ jobs:
     - name: 📂 Upload files
       uses: SamKirkland/FTP-Deploy-Action@3.1.1
       with:
-        ftp-server: 45.85.219.34
+        ftp-server: sftp://45.85.219.34
         ftp-username: ${{ secrets.FTP_USERNAME }}
         ftp-password: ${{ secrets.FTP_PASSWORD }}
-        ftp-port: 22
+        port: 22
         local-dir: ./build/
         server-dir: /var/www/composer/
