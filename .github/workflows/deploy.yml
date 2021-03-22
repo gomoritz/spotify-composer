@@ -21,12 +21,13 @@ jobs:
         yarn build
       env:
         REACT_APP_SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
-    
-    - name: 📂 Upload files
-      uses: SamKirkland/FTP-Deploy-Action@3.1.1
+
+    - name: 🗂 Upload ftp
+      uses: sebastianpopp/ftp-action@releases/v2
       with:
-        ftp-server: sftp://45.85.219.34/var/www/composer
-        ftp-username: ${{ secrets.FTP_USERNAME }}
-        ftp-password: ${{ secrets.FTP_PASSWORD }}
-        local-dir: build/
-        known-hosts: "|1|zq9eRVqZMLoISZ319inE35NaxZE=|ox4M9SEton9RizSnO8IPsfru+c4= ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC684V2vLnOU283jUezpZztGegwYoOrDyN2IxBLUZKqrG/KNgGqjfvWR59dXB/2ROfKIA0VLQIffKNJAtUFVgs0tmdNJgASojzpfEkdBJasbgHYwrmxiGFWFQGC7DsBEdELQ/CQxq4Wv9qHZpV7Y5YDnl17uXj5lp9+ZtQ+vMOO7OpBUN9Wb9P+gP/xwQQL6bK8xkyb+HKuWhLRFKAde1APNWxCbcKQKCGlrQT4kAxjJlhBwP99Yh1rww7mC76aBlYNC7y+mEqpodgNahBTMXRpR67X67YG7MsZaLMpOMRUPbgjGILJfFgcsG1e/fhjWDs2zU8+Jfk2eKOZ296Uma+J"
+        host: sftp://45.85.219.34
+        user: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        localDir: "build"
+        remoteDir: "/var/www/composer"
+        options: "--delete --asci"
