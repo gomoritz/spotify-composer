@@ -1,6 +1,6 @@
 import React, { useState } from "react"
-import SongItem from "@components/SongItem"
-import FinishButton from "@components/FinishButton"
+import SongItem from "@components/composer/finish/SongItem"
+import FinishButton from "@components/composer/finish/FinishButton"
 import { addSongsToPlaylist, createPlaylist } from "@spotify/playlists"
 import { Song } from "@typedefs/spotify"
 
