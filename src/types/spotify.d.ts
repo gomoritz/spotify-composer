@@ -13,6 +13,9 @@ export interface Playlist {
     images: {
         url: string
     }[]
+    owner: {
+        id: string
+    }
 }
 
 export interface Song {
