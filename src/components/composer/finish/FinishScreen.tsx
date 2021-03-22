@@ -1,8 +1,8 @@
 import React, { useState } from "react"
-import SongItem from "./SongItem"
-import { addSongsToPlaylist, createPlaylist } from "../../../spotify/playlists"
-import FinishButton from "./FinishButton"
-import { Song } from "../../../types/spotify"
+import SongItem from "@components/SongItem"
+import FinishButton from "@components/FinishButton"
+import { addSongsToPlaylist, createPlaylist } from "@spotify/playlists"
+import { Song } from "@typedefs/spotify"
 
 interface Props {
     songs: Song[]

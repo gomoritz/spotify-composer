@@ -1,5 +1,5 @@
 import React from "react"
-import AuthorizationButton from "./AuthorizationButton"
+import AuthorizationButton from "@components/AuthorizationButton"
 
 const Authorize: React.FC = () => {
     return (

@@ -1,6 +1,6 @@
 import { motion, useMotionValue, useTransform } from "framer-motion"
 import React from "react"
-import { Playlist } from "../../../types/spotify"
+import { Playlist } from "@typedefs/spotify"
 
 interface Props {
     playlist: Playlist

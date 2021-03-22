@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react"
-import { getPlaylists } from "../../../spotify/playlists"
-import PlaylistCard from "./PlaylistCard"
 import { motion } from "framer-motion"
-import { Playlist } from "../../../types/spotify"
-import useAsync from "../../../utils/useAsync"
-import { getProfile } from "../../../spotify/profile"
 import FilterDropdown from "./FilterDropdown"
+import PlaylistCard from "./PlaylistCard"
+import useAsync from "@utils/useAsync"
+import { getProfile } from "@spotify/profile"
+import { getPlaylists } from "@spotify/playlists"
+import { Playlist } from "@typedefs/spotify"
 
 interface Props {
 	setIncludedPlaylists: (playlists: string[]) => void

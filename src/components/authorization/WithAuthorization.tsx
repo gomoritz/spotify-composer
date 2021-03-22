@@ -1,6 +1,6 @@
 import React from "react"
-import { getAccessToken } from "../../spotify/authorization"
-import Authorize from "./Authorize"
+import Authorize from "@components/Authorize"
+import { getAccessToken } from "@spotify/authorization"
 
 const WithAuthorization: React.FC = ({ children }) => {
     return getAccessToken() ? <>{children}</> : <Authorize/>

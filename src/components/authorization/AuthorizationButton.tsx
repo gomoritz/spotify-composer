@@ -1,6 +1,6 @@
 import React from "react"
 import { motion } from "framer-motion"
-import constants from "../../spotify/constants"
+import constants from "@spotify/constants"
 
 interface Props {
 

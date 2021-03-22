@@ -20,7 +20,21 @@
         "resolveJsonModule": true,
         "isolatedModules": true,
         "noEmit": true,
-        "jsx": "react-jsx"
+        "jsx": "react-jsx",
+        "baseUrl": "./src/",
+        "paths": {
+            "@components/*": [
+                "components/*",
+                "components/authorization/*",
+                "components/composer/*",
+                "components/composer/finish/*",
+                "components/composer/playlist/*",
+                "components/composer/song/*"
+            ],
+            "@spotify/*": ["spotify/*"],
+            "@typedefs/*": ["types/*"],
+            "@utils/*": ["utils/*"]
+        }
     },
     "include": [
         "src"

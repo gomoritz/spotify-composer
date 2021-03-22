@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useState } from "react"
-import { getAllSongs } from "../../../spotify/playlists"
 import { useMotionValue } from "framer-motion"
-import SongDragOverlay from "./SongDragOverlay"
-import SongDetails from "./SongDetails"
-import SongBackground from "./SongBackground"
-import useAsync from "../../../utils/useAsync"
-import { Song } from "../../../types/spotify"
+import SongDragOverlay from "@components/SongDragOverlay"
+import SongDetails from "@components/SongDetails"
+import SongBackground from "@components/SongBackground"
+import useAsync from "@utils/useAsync"
+import { Song } from "@typedefs/spotify"
+import { getAllSongs } from "@spotify/playlists"
 
 interface Props {
     includedPlaylists: string[]

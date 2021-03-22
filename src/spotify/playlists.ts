@@ -1,6 +1,6 @@
 import { authorizationHeaders } from "./authorization"
 import { getProfile } from "./profile"
-import { Playlist, PlaylistResponse, Song } from "../types/spotify"
+import { Playlist, PlaylistResponse, Song } from "@typedefs/spotify"
 
 export async function getPlaylists(next?: string): Promise<Playlist[]> {
     const response: PlaylistResponse = await fetch(

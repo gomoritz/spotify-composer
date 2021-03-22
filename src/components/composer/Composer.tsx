@@ -1,8 +1,8 @@
 import React, { useState } from "react"
-import PlaylistPicker from "./playlist/PlaylistPicker"
-import SongPicker from "./song/SongPicker"
-import FinishScreen from "./finish/FinishScreen"
-import { Song } from "../../types/spotify"
+import PlaylistPicker from "@components/PlaylistPicker"
+import SongPicker from "@components/SongPicker"
+import FinishScreen from "@components/FinishScreen"
+import { Song } from "@typedefs/spotify"
 
 const Composer: React.FC = () => {
     const [includedPlaylists, setIncludedPlaylists] = useState<string[] | null>(null)
