@@ -25,7 +25,7 @@ jobs:
     - name: 📂 Upload files
       uses: SamKirkland/FTP-Deploy-Action@4.0.0
       with:
-        server: cockpit.inceptioncloud.net
+        server: 45.85.219.34
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
         port: 22
