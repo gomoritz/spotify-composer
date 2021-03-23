@@ -37,9 +37,14 @@ export interface Artist {
 }
 
 export interface Album {
-    images: {
-        url: string
-    }[]
+    images: AlbumImage[]
+    id: string
+}
+
+interface AlbumImage {
+    width: number
+    height: number
+    url: string
 }
 
 export interface Profile {

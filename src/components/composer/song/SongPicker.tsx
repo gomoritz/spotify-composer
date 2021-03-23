@@ -50,9 +50,9 @@ const SongPicker: React.FC<Props> = ({ includedPlaylists, setIncludedSongs }) =>
 
     return (
         <div className="w-full flex-grow flex overflow-hidden relative">
-            <SongDragOverlay x={x} onDragEnd={handleDragEnd}/>
-            <SongDetails x={x} currentSong={currentSong}/>
-            <SongBackground currentSong={currentSong}/>
+            <SongDragOverlay x={x} onDragEnd={handleDragEnd} />
+            <SongDetails x={x} currentSong={currentSong} left={songs.length - index} />
+            <SongBackground currentSong={currentSong} />
         </div>
     )
 }
