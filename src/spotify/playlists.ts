@@ -36,6 +36,7 @@ export async function getAllSongs(playlists: string[]): Promise<Song[]> {
         const playlist = await getPlaylist(id)
         for (let song of playlist.tracks.items) {
             if (isAlreadyAdded(song)) continue
+            if (song.is_local || song.track.is_local || !song.track.track) continue
             result.push(song)
         }
     }
