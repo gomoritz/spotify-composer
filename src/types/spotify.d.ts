@@ -19,12 +19,15 @@ export interface Playlist {
 }
 
 export interface Song {
+    is_local: boolean
     track: {
         name: string
         id: string
         uri: string
+        is_local: boolean
+        track?: boolean
         external_ids: {
-            isrc: string
+            isrc?: string
         }
         duration_ms: number
         artists: Artist[]
