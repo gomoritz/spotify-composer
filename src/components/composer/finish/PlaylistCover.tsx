@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react"
-import { AlbumImage, Song } from "../../../types/spotify"
+import { AlbumImage, Song } from "@typedefs/spotify"
 
 type Props = {
     songs: Song[]
@@ -8,7 +8,7 @@ type Props = {
 const PlaylistCover: React.FC<Props> = ({ songs }) => {
     const canvasSize = 250
     const canvasRef = useRef<HTMLCanvasElement | null>(null)
-    const [images, setImages] = useState<AlbumImage[]>([])
+    const [images, setImages] = useState<(AlbumImage | null)[]>([])
     const [imageIndex, setImageIndex] = useState(0)
     useEffect(() => {
         const canvas = canvasRef.current
@@ -18,6 +18,8 @@ const PlaylistCover: React.FC<Props> = ({ songs }) => {
             ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
             if (images.length >= 4) {
                 images.forEach((image, i) => {
+                    if (!image) return
+
                     let left = 0
                     let top = 0
                     if (i <= 1) left = i * (canvasSize / 2)
@@ -28,7 +30,7 @@ const PlaylistCover: React.FC<Props> = ({ songs }) => {
                     }
                     const img = document.createElement("img")
                     img.crossOrigin = "anonymous"
-                    img.src = image.url
+                    img.src = image!.url
                     img.addEventListener("load", () => {
                         ctx.drawImage(img, 0, 0, img.width, img.height, left, top, canvasSize / 2, canvasSize / 2)
                     })
@@ -61,7 +63,7 @@ const PlaylistCover: React.FC<Props> = ({ songs }) => {
         setImages(resolveImages())
     }, [songs])
 
-    function changeCoverImage(e: React.MouseEvent<HTMLCanvasElement, MouseEvent>, image: AlbumImage) {
+    function changeCoverImage(e: React.MouseEvent<HTMLCanvasElement, MouseEvent>, image: AlbumImage | null) {
         console.log("Set image:", image)
         console.log(imageIndex)
         setImages(prev => {
