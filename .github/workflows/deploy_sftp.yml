@@ -1,28 +1,35 @@
 on:
   push:
     branches: [main]
-name: 🚀 Deploy React app on push
+name: 🚀 Deploy React App to Production
 jobs:
-  deploy:
-    name: 🎉 Deploy React app to production
+  setup:
+    name: 📌 Setup build process
     runs-on: ubuntu-latest
     steps:
-      - name: 🚚 Get latest code
+      - name: ⏩ Checkout latest code
         uses: actions/checkout@v2.3.2
-
-      - name: 🔧 Use Node.js 12
+      - name: 🌟 Setup Node.js 14
         uses: actions/setup-node@v2-beta
         with:
           node-version: '14'
+      - name: ⬇ Install dependencies
+        run: yarn install
 
-      - name: 🔨 Build React app
-        run: |
-          yarn install
-          yarn build
+  build:
+    name: 🔨 Build React App
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🧾 Execute build script
+        run: yarn build
         env:
           REACT_APP_SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
 
-      - name: 🗂 Upload ftp
+  deploy:
+    name: 🗂 Deploy production build
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⬆ Upload build folder to production server
         uses: SamKirkland/FTP-Deploy-Action@2.0.0
         env:
           FTP_SERVER: 45.85.219.34
