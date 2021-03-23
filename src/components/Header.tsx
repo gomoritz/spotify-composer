@@ -18,7 +18,7 @@ const Header: React.FC<Props> = () => {
             <div className="w-full flex justify-between items-center py-3 px-7 max-w-screen-lg mx-auto">
                 <div className="whitespace-nowrap flex-nowrap">
                     <p className="text-xl font-bold tracking-tight text-white m-0 p-0">
-                        Spotify Playlist Composer
+                        Spotify Composer
                     </p>
                     <p className="text-sm font-normal tracking-tight text-white opacity-75 -mt-1">
                         by Inception Cloud
