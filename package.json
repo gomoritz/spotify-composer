@@ -9,6 +9,7 @@
     "array-move": "^3.0.1",
     "autoprefixer": "^9.8.6",
     "craco": "^0.0.3",
+    "craco-alias": "^2.2.0",
     "framer-motion": "^4.0.0",
     "postcss": "^7.0.35",
     "react": "^17.0.1",

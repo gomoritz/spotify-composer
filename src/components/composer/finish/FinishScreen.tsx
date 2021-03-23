@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react"
-import SongItem from "./SongItem"
-import { addSongsToPlaylist, createPlaylist } from "../../../spotify/playlists"
-import FinishButton from "./FinishButton"
-import { Song } from "../../../types/spotify"
-import PlaylistCover from "./PlaylistCover"
-import DragItem from "../../DragItem"
-import { usePositionReorder } from "../../../utils/usePositionReorder"
+import React, { useState } from "react"
+import SongItem from "@components/composer/finish/SongItem"
+import FinishButton from "@components/composer/finish/FinishButton"
+import PlaylistCover from "@components/composer/finish/PlaylistCover"
+import DragItem from "@components/DragItem"
+import { addSongsToPlaylist, createPlaylist } from "@spotify/playlists"
+import { Song } from "@typedefs/spotify"
+import { usePositionReorder } from "@utils/usePositionReorder"
 
 interface Props {
     songs: Song[]
@@ -15,12 +15,6 @@ const FinishScreen: React.FC<Props> = ({ songs }) => {
     const [working, setWorking] = useState(false)
     const [order, updatePosition, updateOrder] = usePositionReorder(songs)
 
-    useEffect(() => {
-        console.log(
-            "The order:",
-            order.map((o: Song) => o.track.name)
-        )
-    }, [order])
     function finish() {
         if (working) return
         setWorking(true)

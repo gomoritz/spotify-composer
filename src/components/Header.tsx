@@ -1,6 +1,6 @@
 import React from "react"
-import useAsync from "../utils/useAsync"
-import { getProfile } from "../spotify/profile"
+import useAsync from "@utils/useAsync"
+import { getProfile } from "@spotify/profile"
 
 interface Props {
 

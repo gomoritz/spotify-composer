@@ -1,9 +1,9 @@
 import React from "react"
-import Header from "./Header"
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom"
-import AuthorizationCallback from "./authorization/AuthorizationCallback"
-import WithAuthorization from "./authorization/WithAuthorization"
-import Composer from "./composer/Composer"
+import Header from "@components/Header"
+import AuthorizationCallback from "@components/authorization/AuthorizationCallback"
+import WithAuthorization from "@components/authorization/WithAuthorization"
+import Composer from "@components/composer/Composer"
 
 const App: React.FC = () => {
     return (
