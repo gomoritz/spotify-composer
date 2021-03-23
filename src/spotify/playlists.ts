@@ -52,7 +52,7 @@ export async function createPlaylist(): Promise<Playlist> {
         body: JSON.stringify({
             name: `${getRandomEmoji()} ${profile.display_name}'s Composed Playlist`,
             description:
-                "🔥 Generated with the Spotify Playlist Composer by Inception Cloud. " +
+                "🔥 Generated with the Spotify Composer by Inception Cloud. " +
                 "👉 Create your own one at composer.inceptioncloud.net!",
         }),
     })
