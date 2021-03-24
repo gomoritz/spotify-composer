@@ -6,6 +6,8 @@ import SongBackground from "@components/composer/song/SongBackground"
 import useAsync from "@utils/useAsync"
 import { Song } from "@typedefs/spotify"
 import { getAllSongs } from "@spotify/playlists"
+import SongAudioPreview from "@components/composer/song/SongAudioPreview"
+import SongAudioControls from "@components/composer/song/SongAudioControls"
 
 interface Props {
     includedPlaylists: string[]
@@ -20,6 +22,8 @@ const SongPicker: React.FC<Props> = ({ includedPlaylists, setIncludedSongs }) =>
     const [taken, setTaken] = useState<Song[]>([])
 
     const x = useMotionValue(0)
+
+    const [targetVolume, setTargetVolume] = useState(.15)
 
     useEffect(() => {
         if (state === "done" && index === songs!.length) {
@@ -50,8 +54,12 @@ const SongPicker: React.FC<Props> = ({ includedPlaylists, setIncludedSongs }) =>
 
     return (
         <div className="w-full flex-grow flex overflow-hidden relative">
+            <SongAudioPreview currentSong={currentSong} key={currentSong.track.id} targetVolume={targetVolume}/>
+            <SongAudioControls targetVolume={targetVolume} setTargetVolume={setTargetVolume}/>
+
             <SongDragOverlay x={x} onDragEnd={handleDragEnd} />
             <SongDetails x={x} currentSong={currentSong} left={songs.length - index} />
+
             <SongBackground currentSong={currentSong} />
         </div>
     )
