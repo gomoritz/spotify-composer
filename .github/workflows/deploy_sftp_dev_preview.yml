@@ -1,0 +1,32 @@
+on:
+  push:
+    branches: [develop]
+name: 🚀 Deploy development preview of React App
+jobs:
+  deploy:
+    name: 🎨 Build and deploy React App development preview
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⏩ Checkout latest code
+        uses: actions/checkout@v2.3.2
+      - name: 🌟 Setup Node.js 14
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: '14'
+      - name: ⬇ Install dependencies
+        run: yarn install
+      - name: 🔨 Build React App
+        run: yarn build
+        env:
+          REACT_APP_SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+      - name: 🗂 Upload build folder to preview server
+        uses: SamKirkland/FTP-Deploy-Action@2.0.0
+        env:
+          FTP_SERVER: 45.85.219.34
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          METHOD: sftp
+          PORT: 22
+          LOCAL_DIR: build
+          REMOTE_DIR: /var/www/composer.preview
+          ARGS: --delete
