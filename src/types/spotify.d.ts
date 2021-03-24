@@ -32,6 +32,7 @@ export interface Song {
         duration_ms: number
         artists: Artist[]
         album: Album
+        preview_url?: string
     }
 }
 
