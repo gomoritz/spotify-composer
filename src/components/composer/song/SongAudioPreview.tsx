@@ -1,16 +1,34 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+// ^ these checks are disabled because the changing of refs before an effect is cleared is intended
 import React, { useEffect, useRef, useState } from "react"
 import { Song } from "@typedefs/spotify"
-import interpolate from "@utils/interpolate"
+import interpolate, { Interpolation } from "@utils/interpolate"
 import { motion } from "framer-motion"
 
 type Props = {
     currentSong: Song
+    targetVolume: number
 }
 
-const SongAudioPreview: React.FC<Props> = ({ currentSong }) => {
+const SongAudioPreview: React.FC<Props> = ({ currentSong, targetVolume }) => {
     const audioRef = useRef<HTMLAudioElement | null>(null)
     const [progress, setProgress] = useState(0)
-    const [targetVolume, setTargetVolume] = useState(.08)
+
+    const fadeInRef = useRef<Interpolation>(interpolate({
+        from: 0,
+        to: targetVolume,
+        steps: 10,
+        duration: 100,
+        action: (volume) => audioRef.current!.volume = coerceVolume(volume)
+    }))
+
+    const fadeOutRef = useRef<Interpolation>(interpolate({
+        from: targetVolume,
+        to: 0,
+        steps: 10,
+        duration: 100,
+        action: (volume) => audioRef.current!.volume = coerceVolume(volume)
+    }))
 
     useEffect(() => {
         setProgress(0)
@@ -19,60 +37,55 @@ const SongAudioPreview: React.FC<Props> = ({ currentSong }) => {
 
         const audio: HTMLAudioElement = new Audio(previewUrl)
         audioRef.current = audio
-        audio.volume = 0.0
 
         let looping = false
         const listener = async () => {
             setProgress((audio.currentTime / audio.duration) * 100)
             if (audio.currentTime > audio.duration - 2 && !looping) {
                 looping = true
-                await fadeOut.start()
+                await fadeOutRef.current.start()
                 audio.pause()
                 audio.currentTime = 0
                 setProgress(0)
                 await audio.play()
-                await fadeIn.start()
+                await fadeInRef.current.start()
                 looping = false
             }
         }
         audio.addEventListener("timeupdate", listener)
 
-        // interpolation to fade volume in
-        const fadeIn = interpolate({
-            from: 0,
-            to: targetVolume,
-            steps: 10,
-            duration: 100,
-            action: (volume) => audio.volume = volume
-        })
-
-        // interpolation to fade volume out
-        const fadeOut = interpolate({
-            from: targetVolume,
-            to: 0,
-            steps: 10,
-            duration: 100,
-            action: (volume) => audio.volume = volume
-        })
+        let interruped = false
 
         // start playback after 500ms
         setTimeout(() => {
+            if (interruped) return
+            audio.volume = 0.0
             audio.play()
-            fadeIn.start()
+            fadeInRef.current!.start()
         }, 500)
 
         // kill progress listener and stop playback
         return () => {
+            interruped = true
             audio.removeEventListener("timeupdate", listener)
-            fadeIn.interrupt()
-            fadeOut.start().then(() => audio.pause())
+            fadeInRef.current.interrupt()
+            fadeOutRef.current.start().then(() => audio.pause())
         }
-    }, [currentSong, targetVolume])
+    }, [currentSong])
+
+    useEffect(() => {
+        const audio = audioRef.current
+        if (audio) {
+            audio.volume = coerceVolume(targetVolume)
+            fadeInRef.current.to = targetVolume
+            fadeOutRef.current.from = targetVolume
+            console.log("changed to targetVolume =", targetVolume)
+        }
+    }, [targetVolume, currentSong])
 
     return (
         <>
-            <div onClick={() => setTargetVolume(targetVolume === .08 ? .03 : .08)}
-                 className="absolute bottom-0 left-0 w-full z-30 h-1.5 bg-emerald-700"/>
+            <div className="absolute bottom-0 left-0 w-full z-30 h-1.5 bg-emerald-700"/>
             <motion.div
                 className="absolute bottom-0 left-0 z-30 h-1.5 bg-emerald-500"
                 animate={{ width: `${progress}%` }}
@@ -80,6 +93,10 @@ const SongAudioPreview: React.FC<Props> = ({ currentSong }) => {
             />
         </>
     )
+}
+
+function coerceVolume(volume: number) {
+    return Math.max(0, Math.min(1, volume))
 }
 
 export default SongAudioPreview
