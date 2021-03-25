@@ -4,7 +4,7 @@ import FilterDropdown from "./FilterDropdown"
 import PlaylistCard from "./PlaylistCard"
 import useAsync from "@utils/useAsync"
 import { getProfile } from "@spotify/profile"
-import { getPlaylists } from "@spotify/playlists"
+import { buildPseudoPlaylistFromLibrary, getPlaylists } from "@spotify/playlists"
 import { Playlist } from "@typedefs/spotify"
 
 interface Props {
@@ -23,8 +23,8 @@ const PlaylistPicker: React.FC<Props> = ({ setIncludedPlaylists }) => {
 
     useEffect(() => {
         getPlaylists()
-            .then(fetched => {
-                setPlaylists(fetched)
+            .then(async fetched => {
+                setPlaylists([await buildPseudoPlaylistFromLibrary(), ...fetched])
                 console.log("Fetched playlists...")
             })
             .catch(console.error)
