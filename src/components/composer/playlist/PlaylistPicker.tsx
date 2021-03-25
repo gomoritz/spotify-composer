@@ -8,7 +8,7 @@ import { getPlaylists } from "@spotify/playlists"
 import { Playlist } from "@typedefs/spotify"
 
 interface Props {
-    setIncludedPlaylists: (playlists: string[]) => void
+    setIncludedPlaylists: (playlists: Playlist[]) => void
 }
 
 const FilterOptions = ["all", "owned", "liked"]
@@ -18,7 +18,7 @@ const PlaylistPicker: React.FC<Props> = ({ setIncludedPlaylists }) => {
     const [playlists, setPlaylists] = useState<Playlist[]>([])
     const { result: profile } = useAsync(getProfile)
     const [filteredPlaylists, setFilteredPlaylists] = useState<Playlist[]>([])
-    const [selectedPlaylists, setSelectedPlaylists] = useState<string[]>([])
+    const [selectedPlaylists, setSelectedPlaylists] = useState<Playlist[]>([])
     const [filter, setFilter] = useState<Filter>("all")
 
     useEffect(() => {
@@ -38,13 +38,13 @@ const PlaylistPicker: React.FC<Props> = ({ setIncludedPlaylists }) => {
         })
     }, [filter, playlists, profile?.id])
 
-    const togglePlaylist = (id: string) => {
+    const togglePlaylist = (playlist: Playlist) => {
         setSelectedPlaylists(prevState => {
             const newState = [...prevState]
-            if (newState.includes(id)) {
-                newState.splice(newState.indexOf(id), 1)
+            if (newState.includes(playlist)) {
+                newState.splice(newState.indexOf(playlist), 1)
             } else {
-                newState.push(id)
+                newState.push(playlist)
             }
             return newState
         })
@@ -73,7 +73,7 @@ const PlaylistPicker: React.FC<Props> = ({ setIncludedPlaylists }) => {
                     filteredPlaylists.map(playlist => (
                         <PlaylistCard
                             key={playlist.id}
-                            isSelected={selectedPlaylists.includes(playlist.id)}
+                            isSelected={!!selectedPlaylists.find(it => it.id === playlist.id)}
                             playlist={playlist}
                             togglePlaylist={togglePlaylist}
                         />
