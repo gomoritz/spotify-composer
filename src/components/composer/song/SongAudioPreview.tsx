@@ -79,7 +79,6 @@ const SongAudioPreview: React.FC<Props> = ({ currentSong, targetVolume }) => {
             audio.volume = coerceVolume(targetVolume)
             fadeInRef.current.to = targetVolume
             fadeOutRef.current.from = targetVolume
-            console.log("changed to targetVolume =", targetVolume)
         }
     }, [targetVolume, currentSong])
 

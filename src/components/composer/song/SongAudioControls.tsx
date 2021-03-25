@@ -13,14 +13,14 @@ const SongAudioControls: React.FC<Props> = ({ volume, setVolume }) => {
     const percentage = (volume / max) * 100
 
     const [expanded, setExpanded] = useState(false)
-    const beforeMute = useRef(0.15)
+    const beforeMute = useRef(volume)
 
     const volumeControlRef = useRef<HTMLDivElement>(null)
-    const y = useMotionValue(percentage)
+    const y = useMotionValue(100 - percentage)
     const dragControls = useDragControls()
 
     useEffect(() => {
-        y.set(percentage, true)
+        y.set(100 - percentage, true)
     }, [y, percentage, volume])
 
     const Icon = percentage === 0 ? IoVolumeMuteOutline :
@@ -35,8 +35,11 @@ const SongAudioControls: React.FC<Props> = ({ volume, setVolume }) => {
     }
 
     function updateVolume() {
-        const yPercent = Math.max(0, Math.min(1, y.get() / 100))
+        console.log("y.get() =", y.get())
+        const yPercent = 1 - Math.max(0, Math.min(1, y.get() / 98))
+        console.log("yPercent =", yPercent)
         const coerced = Math.max(0, Math.min(max, yPercent * max))
+        console.log("coerced =", coerced)
         setVolume(coerced)
     }
 
