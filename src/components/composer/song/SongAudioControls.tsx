@@ -13,7 +13,7 @@ const SongAudioControls: React.FC<Props> = ({ volume, setVolume }) => {
     const percentage = (volume / max) * 100
 
     const [expanded, setExpanded] = useState(false)
-    const beforeMute = useRef(volume)
+    const beforeMute = useRef(volume > 0 ? volume : 0.15)
 
     const volumeControlRef = useRef<HTMLDivElement>(null)
     const y = useMotionValue(100 - percentage)
@@ -35,11 +35,8 @@ const SongAudioControls: React.FC<Props> = ({ volume, setVolume }) => {
     }
 
     function updateVolume() {
-        console.log("y.get() =", y.get())
         const yPercent = 1 - Math.max(0, Math.min(1, y.get() / 98))
-        console.log("yPercent =", yPercent)
         const coerced = Math.max(0, Math.min(max, yPercent * max))
-        console.log("coerced =", coerced)
         setVolume(coerced)
     }
 
