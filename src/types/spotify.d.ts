@@ -1,5 +1,10 @@
-export interface PlaylistResponse {
+export interface PlaylistCollection {
     items: Playlist[]
+    next?: string
+}
+
+export interface SongCollection {
+    items: Song[]
     next?: string
 }
 
@@ -10,9 +15,7 @@ export interface Playlist {
         items: Song[]
         total: number
     }
-    images: {
-        url: string
-    }[]
+    images: Image[]
     owner: {
         id: string
     }
@@ -41,17 +44,18 @@ export interface Artist {
 }
 
 export interface Album {
-    images: (AlbumImage | null)[]
+    images: (Image | null)[]
     id: string
 }
 
-interface AlbumImage {
-    width: number
-    height: number
+interface Image {
+    width?: number
+    height?: number
     url: string
 }
 
 export interface Profile {
     display_name: string
     id: string
+    images: Image[]
 }

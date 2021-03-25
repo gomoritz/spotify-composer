@@ -1,42 +1,77 @@
 import { authorizationHeaders } from "./authorization"
-import { getProfile } from "./profile"
-import { Playlist, PlaylistResponse, Song } from "@typedefs/spotify"
+import { getProfile, getSavedSongs } from "./profile"
+import { Image, Playlist, PlaylistCollection, Song, SongCollection } from "@typedefs/spotify"
 
 export async function getPlaylists(next?: string): Promise<Playlist[]> {
-    const response: PlaylistResponse = await fetch(next ?? "https://api.spotify.com/v1/me/playlists?limit=50", {
+    const response: PlaylistCollection = await fetch(next ?? "https://api.spotify.com/v1/me/playlists?limit=50", {
         headers: authorizationHeaders(),
     })
         .then(res => res.json())
         .catch(console.error)
 
     if (response.next) {
-        console.log(`Got ${response.items.length}, fetching next...`)
         return [...response.items, ...(await getPlaylists(response.next))]
     }
 
     return response.items
 }
 
-export async function getPlaylist(id: string): Promise<Playlist> {
-    return await fetch("https://api.spotify.com/v1/playlists/" + id, {
+export async function getPlaylistTracks(id: string, next?: string): Promise<Song[]> {
+    const response: SongCollection = await fetch(next ?? `https://api.spotify.com/v1/playlists/${id}/tracks`, {
         headers: authorizationHeaders(),
     })
         .then(res => res.json())
         .catch(console.error)
+
+    if (response.next) {
+        return [...response.items, ...(await getPlaylistTracks(id, response.next))]
+    }
+
+    return response.items
 }
 
-export async function getAllSongs(playlists: string[]): Promise<Song[]> {
-    const result: Song[] = []
-    const isAlreadyAdded = (song: Song) =>
-        !!result.find(
-            it => it.track.id === song.track.id || it.track.external_ids.isrc === song.track.external_ids.isrc
-        )
+export async function buildPseudoPlaylistFromLibrary(): Promise<Playlist> {
+    const profile = (await getProfile())!
+    const items = (await getSavedSongs())!
 
-    for (let id of playlists) {
-        const playlist = await getPlaylist(id)
-        for (let song of playlist.tracks.items) {
+    const images: Image[] = []
+    if (profile.images.length > 0) {
+        images.push(profile.images[0])
+    } else {
+        for (let song of items) {
+            const albumImage = song.track.album.images[0]
+            if (albumImage) {
+                images.push(albumImage)
+                break
+            }
+        }
+    }
+
+    return {
+        id: "library-pseudo",
+        name: "Your library",
+        owner: { id: profile.id },
+        tracks: {
+            items,
+            total: items.length
+        },
+        images
+    }
+}
+
+
+export async function collectSongs(playlists: Playlist[]): Promise<Song[]> {
+    const result: Song[] = []
+    const isAlreadyAdded = (song: Song) => !!result.find(
+        it => it.track.id === song.track.id || it.track.external_ids.isrc === song.track.external_ids.isrc
+    )
+
+    for (let playlist of playlists) {
+        const songs = playlist.id === "library-pseudo" ? playlist.tracks.items : await getPlaylistTracks(playlist.id)
+
+        for (let song of songs) {
             if (isAlreadyAdded(song)) continue
-            if (song.is_local || song.track.is_local || !song.track.track) continue
+            if (song.is_local || song.track.is_local) continue
             result.push(song)
         }
     }
