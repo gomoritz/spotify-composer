@@ -59,8 +59,12 @@ export async function buildPseudoPlaylistFromLibrary(): Promise<Playlist> {
     }
 }
 
+export interface SongLoadingState {
+    songs: number
+    playlist: Playlist
+}
 
-export async function collectSongs(playlists: Playlist[]): Promise<Song[]> {
+export async function collectSongs(playlists: Playlist[], loadingCallback: (state: SongLoadingState) => void): Promise<Song[]> {
     const result: Song[] = []
     const isAlreadyAdded = (song: Song) => !!result.find(
         it => it.track.id === song.track.id || it.track.external_ids.isrc === song.track.external_ids.isrc
@@ -68,6 +72,7 @@ export async function collectSongs(playlists: Playlist[]): Promise<Song[]> {
 
     for (let playlist of playlists) {
         const songs = playlist.id === "library-pseudo" ? playlist.tracks.items : await getPlaylistTracks(playlist.id)
+        loadingCallback({ songs: result.length, playlist })
 
         for (let song of songs) {
             if (isAlreadyAdded(song)) continue
