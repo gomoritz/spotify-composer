@@ -25,7 +25,12 @@ export async function getPlaylist(id: string): Promise<Playlist> {
         .catch(console.error)
 }
 
-export async function getAllSongs(playlists: string[]): Promise<Song[]> {
+export interface SongLoadingState {
+    songs: number
+    playlist: Playlist
+}
+
+export async function getAllSongs(playlists: string[], loadingCallback: (state: SongLoadingState) => void): Promise<Song[]> {
     const result: Song[] = []
     const isAlreadyAdded = (song: Song) =>
         !!result.find(
@@ -34,6 +39,7 @@ export async function getAllSongs(playlists: string[]): Promise<Song[]> {
 
     for (let id of playlists) {
         const playlist = await getPlaylist(id)
+        loadingCallback({ songs: result.length, playlist })
         for (let song of playlist.tracks.items) {
             if (isAlreadyAdded(song)) continue
             if (song.is_local || song.track.is_local || !song.track.track) continue
