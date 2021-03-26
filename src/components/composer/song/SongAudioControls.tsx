@@ -4,24 +4,24 @@ import { AnimatePresence, motion, useDragControls, useMotionValue } from "framer
 import { isMobile } from "react-device-detect"
 
 type Props = {
-    targetVolume: number
-    setTargetVolume(value: number): void
+    volume: number
+    setVolume(value: number): void
 }
 
-const SongAudioControls: React.FC<Props> = ({ targetVolume, setTargetVolume }) => {
+const SongAudioControls: React.FC<Props> = ({ volume, setVolume }) => {
     const max = 0.45
-    const percentage = (targetVolume / max) * 100
+    const percentage = (volume / max) * 100
 
     const [expanded, setExpanded] = useState(false)
-    const beforeMute = useRef(0.15)
+    const beforeMute = useRef(volume > 0 ? volume : 0.15)
 
     const volumeControlRef = useRef<HTMLDivElement>(null)
-    const y = useMotionValue(percentage)
+    const y = useMotionValue(100 - percentage)
     const dragControls = useDragControls()
 
     useEffect(() => {
-        y.set(percentage, true)
-    }, [y, percentage, targetVolume])
+        y.set(100 - percentage, true)
+    }, [y, percentage, volume])
 
     const Icon = percentage === 0 ? IoVolumeMuteOutline :
         percentage > 75 ? IoVolumeHighOutline :
@@ -35,9 +35,9 @@ const SongAudioControls: React.FC<Props> = ({ targetVolume, setTargetVolume }) =
     }
 
     function updateVolume() {
-        const yPercent = Math.max(0, Math.min(1, y.get() / 100))
+        const yPercent = 1 - Math.max(0, Math.min(1, y.get() / 98))
         const coerced = Math.max(0, Math.min(max, yPercent * max))
-        setTargetVolume(coerced)
+        setVolume(coerced)
     }
 
     const snap: React.MouseEventHandler<HTMLDivElement> = (event) => {
@@ -51,11 +51,11 @@ const SongAudioControls: React.FC<Props> = ({ targetVolume, setTargetVolume }) =
             return
         }
 
-        if (targetVolume === 0) {
-            setTargetVolume(beforeMute.current)
+        if (volume === 0) {
+            setVolume(beforeMute.current)
         } else {
-            beforeMute.current = targetVolume
-            setTargetVolume(0)
+            beforeMute.current = volume
+            setVolume(0)
         }
     }
 
