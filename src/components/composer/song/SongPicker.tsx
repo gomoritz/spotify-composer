@@ -25,7 +25,11 @@ const SongPicker: React.FC<Props> = ({ includedPlaylists, setIncludedSongs }) =>
 
     const x = useMotionValue(0)
 
-    const [targetVolume, setTargetVolume] = useState(.15)
+    const [targetVolume, setTargetVolume] = useState(readFromLocalStorage() ?? 0.15)
+    const setVolume = (value: number) => {
+        writeToLocalStorage(value)
+        setTargetVolume(value)
+    }
 
     useEffect(() => {
         if (state === "done" && index === songs!.length) {
@@ -61,7 +65,7 @@ const SongPicker: React.FC<Props> = ({ includedPlaylists, setIncludedSongs }) =>
                             key="picker"
                         >
                             <SongAudioPreview currentSong={currentSong} key={currentSong.track.id} targetVolume={targetVolume}/>
-                            <SongAudioControls targetVolume={targetVolume} setTargetVolume={setTargetVolume}/>
+                            <SongAudioControls volume={targetVolume} setVolume={setVolume}/>
 
                             <SongDragOverlay x={x} onDragEnd={handleDragEnd}/>
                             <SongDetails x={x} currentSong={currentSong} left={songs.length - index}/>
@@ -77,6 +81,18 @@ const SongPicker: React.FC<Props> = ({ includedPlaylists, setIncludedSongs }) =>
             </AnimatePresence>
         </div>
     )
+}
+
+function writeToLocalStorage(volume: number) {
+    localStorage.setItem("volume", String(volume))
+}
+
+function readFromLocalStorage(): number | null {
+    const item = localStorage.getItem("volume")
+    if (item) {
+        const number = parseInt(item)
+        return isNaN(number) ? null : number
+    } else return null
 }
 
 export default SongPicker

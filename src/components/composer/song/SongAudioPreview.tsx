@@ -41,7 +41,7 @@ const SongAudioPreview: React.FC<Props> = ({ currentSong, targetVolume }) => {
         let looping = false
         const listener = async () => {
             setProgress((audio.currentTime / audio.duration) * 100)
-            if (audio.currentTime > audio.duration - 2 && !looping) {
+            if (audio.currentTime > audio.duration - 1.3 && !looping) {
                 looping = true
                 await fadeOutRef.current.start()
                 audio.pause()
@@ -79,11 +79,10 @@ const SongAudioPreview: React.FC<Props> = ({ currentSong, targetVolume }) => {
             audio.volume = coerceVolume(targetVolume)
             fadeInRef.current.to = targetVolume
             fadeOutRef.current.from = targetVolume
-            console.log("changed to targetVolume =", targetVolume)
         }
     }, [targetVolume, currentSong])
 
-    return (
+    return audioRef.current && (
         <>
             <div className="absolute bottom-0 left-0 w-full z-30 h-1.5 bg-emerald-700"/>
             <motion.div
