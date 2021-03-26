@@ -57,17 +57,27 @@ const SongAudioPreview: React.FC<Props> = ({ currentSong, targetVolume }) => {
         let interruped = false
 
         // start playback after 500ms
-        setTimeout(() => {
+        setTimeout(async () => {
             if (interruped) return
-            audio.volume = 0.0
-            audio.play()
-            fadeInRef.current!.start()
+            try {
+                audio.volume = 0.0
+                await audio.play()
+            } catch (e) {
+                audioRef.current = null
+                setProgress(-1)
+                interruped = true
+                return
+            }
+
+            await fadeInRef.current!.start()
         }, 500)
 
         // kill progress listener and stop playback
         return () => {
-            interruped = true
             audio.removeEventListener("timeupdate", listener)
+
+            if (interruped) return
+            interruped = true
             fadeInRef.current.interrupt()
             fadeOutRef.current.start().then(() => audio.pause())
         }
