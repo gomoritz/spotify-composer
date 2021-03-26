@@ -2,10 +2,10 @@ import React, { useState } from "react"
 import PlaylistPicker from "@components/composer/playlist/PlaylistPicker"
 import SongPicker from "@components/composer/song/SongPicker"
 import FinishScreen from "@components/composer/finish/FinishScreen"
-import { Song } from "@typedefs/spotify"
+import { Playlist, Song } from "@typedefs/spotify"
 
 const Composer: React.FC = () => {
-    const [includedPlaylists, setIncludedPlaylists] = useState<string[] | null>(null)
+    const [includedPlaylists, setIncludedPlaylists] = useState<Playlist[] | null>(null)
     const [includedSongs, setIncludedSongs] = useState<Song[] | null>(null)
 
     if (includedSongs) return (

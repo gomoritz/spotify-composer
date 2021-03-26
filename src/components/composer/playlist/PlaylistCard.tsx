@@ -5,7 +5,7 @@ import { Playlist } from "@typedefs/spotify"
 interface Props {
     playlist: Playlist
     isSelected: boolean
-    togglePlaylist: (playlistId: string) => void
+    togglePlaylist: (playlist: Playlist) => void
 }
 
 const PlaylistCard: React.FC<Props> = ({ playlist, isSelected, togglePlaylist }) => {
@@ -36,7 +36,7 @@ const PlaylistCard: React.FC<Props> = ({ playlist, isSelected, togglePlaylist })
             animate={isSelected ? "selected" : "unselected"}
             initial="unselected"
             whileTap={{ scale: 0.95 }}
-            onClick={() => togglePlaylist(playlist.id)}
+            onClick={() => togglePlaylist(playlist)}
         >
             <motion.div
                 className="absolute w-full h-full top-0 left-0 z-10 bg-black bg-opacity-10

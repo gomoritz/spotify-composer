@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react"
-import { AlbumImage, Song } from "@typedefs/spotify"
+import { Image, Song } from "@typedefs/spotify"
 
 type Props = {
     songs: Song[]
@@ -8,7 +8,7 @@ type Props = {
 const PlaylistCover: React.FC<Props> = ({ songs }) => {
     const canvasSize = 250
     const canvasRef = useRef<HTMLCanvasElement | null>(null)
-    const [images, setImages] = useState<(AlbumImage | null)[]>([])
+    const [images, setImages] = useState<(Image | null)[]>([])
     const [imageIndex, setImageIndex] = useState(0)
     useEffect(() => {
         const canvas = canvasRef.current
@@ -58,12 +58,12 @@ const PlaylistCover: React.FC<Props> = ({ songs }) => {
                     uniqueSongs.push(song)
                 }
             }
-            return uniqueSongs.map(item => item.track.album.images[0]) as AlbumImage[]
+            return uniqueSongs.map(item => item.track.album.images[0]) as Image[]
         }
         setImages(resolveImages())
     }, [songs])
 
-    function changeCoverImage(e: React.MouseEvent<HTMLCanvasElement, MouseEvent>, image: AlbumImage | null) {
+    function changeCoverImage(e: React.MouseEvent<HTMLCanvasElement, MouseEvent>, image: Image | null) {
         console.log("Set image:", image)
         console.log(imageIndex)
         setImages(prev => {

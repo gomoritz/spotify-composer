@@ -4,20 +4,20 @@ import SongDragOverlay from "@components/composer/song/SongDragOverlay"
 import SongDetails from "@components/composer/song/SongDetails"
 import SongBackground from "@components/composer/song/SongBackground"
 import useAsync from "@utils/useAsync"
-import { Song } from "@typedefs/spotify"
-import { getAllSongs, SongLoadingState } from "@spotify/playlists"
+import { Playlist, Song } from "@typedefs/spotify"
+import { collectSongs, SongLoadingState } from "@spotify/playlists"
 import SongAudioPreview from "@components/composer/song/SongAudioPreview"
 import SongAudioControls from "@components/composer/song/SongAudioControls"
 import LoadingScreen from "@components/composer/LoadingScreen"
 
 interface Props {
-    includedPlaylists: string[]
+    includedPlaylists: Playlist[]
     setIncludedSongs: (songs: Song[]) => void
 }
 
 const SongPicker: React.FC<Props> = ({ includedPlaylists, setIncludedSongs }) => {
     const [loadingState, setLoadingState] = useState<SongLoadingState>()
-    const loadSongs = useCallback(() => getAllSongs(includedPlaylists, setLoadingState), [includedPlaylists])
+    const loadSongs = useCallback(() => collectSongs(includedPlaylists, setLoadingState), [includedPlaylists])
     const { result: songs, state } = useAsync(loadSongs)
 
     const [index, setIndex] = useState(0)
