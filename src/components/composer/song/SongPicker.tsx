@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react"
-import { AnimatePresence, useMotionValue, motion } from "framer-motion"
+import { AnimatePresence, motion, useMotionValue } from "framer-motion"
 import SongDragOverlay from "@components/composer/song/SongDragOverlay"
 import SongDetails from "@components/composer/song/SongDetails"
 import SongBackground from "@components/composer/song/SongBackground"
@@ -9,6 +9,8 @@ import { collectSongs, SongLoadingState } from "@spotify/playlists"
 import SongAudioPreview from "@components/composer/song/SongAudioPreview"
 import SongAudioControls from "@components/composer/song/SongAudioControls"
 import LoadingScreen from "@components/composer/LoadingScreen"
+import { deleteProgress, readProgress, saveProgress, SongPickingProgress } from "@utils/progress"
+import SongProgressRestoreDialog from "@components/composer/song/SongProgressRestoreDialog"
 
 interface Props {
     includedPlaylists: Playlist[]
@@ -17,11 +19,19 @@ interface Props {
 
 const SongPicker: React.FC<Props> = ({ includedPlaylists, setIncludedSongs }) => {
     const [loadingState, setLoadingState] = useState<SongLoadingState>()
+    const [progress, setProgress] = useState<SongPickingProgress | null>(null)
     const loadSongs = useCallback(() => collectSongs(includedPlaylists, setLoadingState), [includedPlaylists])
     const { result: songs, state } = useAsync(loadSongs)
 
+    useEffect(() => {
+        if (songs) {
+            const obj = readProgress(songs)
+            setProgress(obj)
+        }
+    }, [songs])
+
     const [index, setIndex] = useState(0)
-    const [taken, setTaken] = useState<Song[]>([])
+    const [taken, setTaken] = useState<number[]>([])
 
     const x = useMotionValue(0)
 
@@ -33,22 +43,43 @@ const SongPicker: React.FC<Props> = ({ includedPlaylists, setIncludedSongs }) =>
 
     useEffect(() => {
         if (state === "done" && index === songs!.length) {
-            setIncludedSongs(taken)
+            setIncludedSongs(taken.map(index => songs![index]))
         }
     }, [state, index, songs, setIncludedSongs, taken])
 
+    useEffect(() => {
+        if (songs && index > 0) {
+            saveProgress(songs, { index, taken })
+        }
+    }, [songs, index, taken])
+
     function next() {
-        setIndex(index + 1)
+        setIndex(prev => prev + 1)
     }
 
     function take() {
-        setTaken([...taken, currentSong!])
+        setTaken(prev => [...prev, index])
         next()
     }
 
     function handleDragEnd() {
         if (x.get() > 30) take()
         else if (x.get() < -30) next()
+    }
+
+    function discardProgress() {
+        if (songs && progress) {
+            console.log("discarding progress")
+            deleteProgress(songs)
+        }
+    }
+
+    function restoreProgress() {
+        if (progress) {
+            console.log("restoring progress")
+            setIndex(progress.index)
+            setTaken(progress.taken)
+        }
     }
 
     const currentSong = songs && songs[index]
@@ -64,13 +95,18 @@ const SongPicker: React.FC<Props> = ({ includedPlaylists, setIncludedSongs }) =>
                             transition={{ duration: .6, ease: "easeInOut", bounce: .5 }}
                             key="picker"
                         >
-                            <SongAudioPreview currentSong={currentSong} key={currentSong.track.id} targetVolume={targetVolume}/>
-                            <SongAudioControls volume={targetVolume} setVolume={setVolume}/>
+                            {
+                                progress &&
+                                <SongProgressRestoreDialog restore={restoreProgress} discard={discardProgress} />
+                            }
 
-                            <SongDragOverlay x={x} onDragEnd={handleDragEnd}/>
-                            <SongDetails x={x} currentSong={currentSong} left={songs.length - index}/>
+                            <SongAudioPreview currentSong={currentSong} key={currentSong.track.id} targetVolume={targetVolume} />
+                            <SongAudioControls volume={targetVolume} setVolume={setVolume} />
 
-                            <SongBackground currentSong={currentSong}/>
+                            <SongDragOverlay x={x} onDragEnd={handleDragEnd} />
+                            <SongDetails x={x} currentSong={currentSong} left={songs.length - index} />
+
+                            <SongBackground currentSong={currentSong} />
                         </motion.div>
                         :
                         <LoadingScreen
