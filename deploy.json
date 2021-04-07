@@ -1,0 +1,9 @@
+{
+    "destination": "D:/Workspace/Deployed/spotify-composer",
+    "buildDir": "build",
+    "commands": [
+        "npm i -g yarn",
+        "yarn install",
+        "yarn build"
+    ]
+}
