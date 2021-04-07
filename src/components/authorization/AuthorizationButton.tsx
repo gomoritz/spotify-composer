@@ -21,7 +21,8 @@ const AuthorizationButton: React.FC<Props> = () => {
                     whileTap={{ scale: 0.95 }}
                     onClick={requestAuthorization}
         >
-            Login with <b className="font-semibold">Spotify</b> on production #3
+            Login with <b className="font-semibold">Spotify</b><br/>
+            <small>Using the deployed version</small>
         </motion.div>
     )
 }
