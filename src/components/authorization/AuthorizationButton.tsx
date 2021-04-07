@@ -22,7 +22,6 @@ const AuthorizationButton: React.FC<Props> = () => {
                     onClick={requestAuthorization}
         >
             Login with <b className="font-semibold">Spotify</b><br/>
-            <small>Using the deployed version</small>
         </motion.div>
     )
 }
