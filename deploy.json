@@ -5,5 +5,7 @@
         "npm i -g yarn",
         "yarn install",
         "yarn build"
-    ]
+    ],
+    "productionUrl": "https://composer.incxption.dev",
+    "previewUrl": "https://%0.dev.composer.incxption.dev"
 }
