@@ -4,7 +4,7 @@ import { Image, Playlist, PlaylistCollection, Song, SongCollection } from "@type
 
 export async function getPlaylists(next?: string): Promise<Playlist[]> {
     const response: PlaylistCollection = await fetch(next ?? "https://api.spotify.com/v1/me/playlists?limit=50", {
-        headers: authorizationHeaders(),
+        headers: authorizationHeaders()
     })
         .then(res => res.json())
         .catch(console.error)
@@ -18,7 +18,7 @@ export async function getPlaylists(next?: string): Promise<Playlist[]> {
 
 export async function getPlaylistTracks(id: string, next?: string): Promise<Song[]> {
     const response: SongCollection = await fetch(next ?? `https://api.spotify.com/v1/playlists/${id}/tracks`, {
-        headers: authorizationHeaders(),
+        headers: authorizationHeaders()
     })
         .then(res => res.json())
         .catch(console.error)
@@ -95,24 +95,38 @@ export async function createPlaylist(): Promise<Playlist> {
             name: `${getRandomEmoji()} ${profile.display_name}'s Composed Playlist`,
             description:
                 "🔥 Generated with the Spotify Composer by Inception Cloud. " +
-                "👉 Create your own one at composer.inceptioncloud.net!",
-        }),
+                "👉 Create your own one at composer.inceptioncloud.net!"
+        })
     })
         .then(res => res.json())
         .catch(console.error)
 }
 
 export async function addSongsToPlaylist(playlistId: string, songs: Song[]): Promise<any> {
-    return await fetch("https://api.spotify.com/v1/playlists/" + playlistId + "/tracks", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            ...authorizationHeaders(),
-        },
-        body: JSON.stringify({
-            uris: songs.map(song => song.track.uri),
-        }),
-    })
+    const copy = [...songs]
+    const fractions: (Song[])[] = []
+    const promises: Promise<any>[] = []
+
+    while (copy.length > 0) {
+        fractions.push(copy.splice(0, 100))
+    }
+
+    for (let fraction of fractions) {
+        promises.push(
+            fetch("https://api.spotify.com/v1/playlists/" + playlistId + "/tracks", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    ...authorizationHeaders()
+                },
+                body: JSON.stringify({
+                    uris: fraction.map(song => song.track.uri)
+                })
+            })
+        )
+    }
+
+    return Promise.all(promises)
 }
 
 function getRandomEmoji() {
