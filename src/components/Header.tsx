@@ -13,10 +13,18 @@ const Header: React.FC<Props> = () => {
         : state === "computing" ? "Loading..."
             : "Login with Spotify"
 
+    function reload() {
+        const url = new URL(window.location.href)
+        url.pathname = ""
+        url.hash = ""
+        url.search = ""
+        window.location.replace(url.toString())
+    }
+
     return (
         <div className="w-full bg-emerald-500 shadow-md z-50">
             <div className="w-full flex justify-between items-center py-3 px-7 max-w-screen-lg mx-auto">
-                <div className="whitespace-nowrap flex-nowrap">
+                <div className="whitespace-nowrap flex-nowrap cursor-pointer" onClick={reload}>
                     <p className="text-xl font-bold tracking-tight text-white m-0 p-0">
                         Spotify Composer
                     </p>

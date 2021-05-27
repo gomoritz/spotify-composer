@@ -1,7 +1,7 @@
 on:
   push:
     branches: [develop]
-name: 🚀 Deploy development preview of React App
+name: 👀 Development preview for React App
 jobs:
   deploy:
     name: 🎨 Build and deploy React App development preview

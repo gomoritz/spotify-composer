@@ -1,38 +1,64 @@
 import React, { useCallback, useEffect, useState } from "react"
-import { useMotionValue } from "framer-motion"
+import { AnimatePresence, motion, useMotionValue } from "framer-motion"
 import SongDragOverlay from "@components/composer/song/SongDragOverlay"
 import SongDetails from "@components/composer/song/SongDetails"
 import SongBackground from "@components/composer/song/SongBackground"
 import useAsync from "@utils/useAsync"
-import { Song } from "@typedefs/spotify"
-import { getAllSongs } from "@spotify/playlists"
+import { Playlist, Song } from "@typedefs/spotify"
+import { collectSongs, SongLoadingState } from "@spotify/playlists"
+import SongAudioPreview from "@components/composer/song/SongAudioPreview"
+import SongAudioControls from "@components/composer/song/SongAudioControls"
+import LoadingScreen from "@components/composer/LoadingScreen"
+import { deleteProgress, readProgress, saveProgress, SongPickingProgress } from "@utils/progress"
+import SongProgressRestoreDialog from "@components/composer/song/SongProgressRestoreDialog"
 
 interface Props {
-    includedPlaylists: string[]
+    includedPlaylists: Playlist[]
     setIncludedSongs: (songs: Song[]) => void
 }
 
 const SongPicker: React.FC<Props> = ({ includedPlaylists, setIncludedSongs }) => {
-    const callback = useCallback(() => getAllSongs(includedPlaylists), [includedPlaylists])
-    const { result: songs, state } = useAsync(callback)
+    const [loadingState, setLoadingState] = useState<SongLoadingState>()
+    const [progress, setProgress] = useState<SongPickingProgress | null>(null)
+    const loadSongs = useCallback(() => collectSongs(includedPlaylists, setLoadingState), [includedPlaylists])
+    const { result: songs, state } = useAsync(loadSongs)
+
+    useEffect(() => {
+        if (songs) {
+            const obj = readProgress(songs)
+            setProgress(obj)
+        }
+    }, [songs])
 
     const [index, setIndex] = useState(0)
-    const [taken, setTaken] = useState<Song[]>([])
+    const [taken, setTaken] = useState<number[]>([])
 
     const x = useMotionValue(0)
 
+    const [targetVolume, setTargetVolume] = useState(readFromLocalStorage() ?? 0.15)
+    const setVolume = (value: number) => {
+        writeToLocalStorage(value)
+        setTargetVolume(value)
+    }
+
     useEffect(() => {
         if (state === "done" && index === songs!.length) {
-            setIncludedSongs(taken)
+            setIncludedSongs(taken.map(index => songs![index]))
         }
     }, [state, index, songs, setIncludedSongs, taken])
 
+    useEffect(() => {
+        if (songs && index > 0) {
+            saveProgress(songs, { index, taken })
+        }
+    }, [songs, index, taken])
+
     function next() {
-        setIndex(index + 1)
+        setIndex(prev => prev + 1)
     }
 
     function take() {
-        setTaken([...taken, currentSong])
+        setTaken(prev => [...prev, index])
         next()
     }
 
@@ -41,20 +67,68 @@ const SongPicker: React.FC<Props> = ({ includedPlaylists, setIncludedSongs }) =>
         else if (x.get() < -30) next()
     }
 
-    if (state !== "done" || !songs) {
-        return <div>Loading...</div>
+    function discardProgress() {
+        if (songs && progress) {
+            console.log("discarding progress")
+            deleteProgress(songs)
+        }
     }
 
-    const currentSong = songs[index]
-    if (!currentSong) return <></>
+    function restoreProgress() {
+        if (progress) {
+            console.log("restoring progress")
+            setIndex(progress.index)
+            setTaken(progress.taken)
+        }
+    }
+
+    const currentSong = songs && songs[index]
 
     return (
-        <div className="w-full flex-grow flex overflow-hidden relative">
-            <SongDragOverlay x={x} onDragEnd={handleDragEnd} />
-            <SongDetails x={x} currentSong={currentSong} left={songs.length - index} />
-            <SongBackground currentSong={currentSong} />
+        <div className="w-full flex-grow overflow-hidden flex">
+            <AnimatePresence>
+                {
+                    currentSong && songs ?
+                        <motion.div
+                            className="w-full flex-grow flex overflow-hidden relative"
+                            animate={{ y: 0, opacity: 1 }} initial={{ y: "100%", opacity: 0 }}
+                            transition={{ duration: .6, ease: "easeInOut", bounce: .5 }}
+                            key="picker"
+                        >
+                            {
+                                progress &&
+                                <SongProgressRestoreDialog restore={restoreProgress} discard={discardProgress} />
+                            }
+
+                            <SongAudioPreview currentSong={currentSong} key={currentSong.track.id} targetVolume={targetVolume} />
+                            <SongAudioControls volume={targetVolume} setVolume={setVolume} />
+
+                            <SongDragOverlay x={x} onDragEnd={handleDragEnd} />
+                            <SongDetails x={x} currentSong={currentSong} left={songs.length - index} />
+
+                            <SongBackground currentSong={currentSong} />
+                        </motion.div>
+                        :
+                        <LoadingScreen
+                            title={loadingState?.playlist?.name}
+                            message={loadingState && `${loadingState.songs} unique songs`}
+                        />
+                }
+            </AnimatePresence>
         </div>
     )
+}
+
+function writeToLocalStorage(volume: number) {
+    localStorage.setItem("volume", String(volume))
+}
+
+function readFromLocalStorage(): number | null {
+    const item = localStorage.getItem("volume")
+    if (item) {
+        const number = parseInt(item)
+        return isNaN(number) ? null : number
+    } else return null
 }
 
 export default SongPicker
