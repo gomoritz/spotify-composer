@@ -1,9 +1,11 @@
 {
-    "destination": "D:/Workspace/Deployed/spotify-composer",
+    "destination": "/var/www/composer",
     "buildDir": "build",
     "commands": [
         "npm i -g yarn",
         "yarn install",
         "yarn build"
-    ]
+    ],
+    "productionUrl": "https://composer.incxption.dev",
+    "previewUrl": "https://%0.preview.composer.incxption.dev"
 }
