@@ -4,12 +4,16 @@ import DialogButton from "@components/composer/song/DialogButton"
 import { Song } from "@typedefs/spotify"
 
 type Props = {
-    isVisible: boolean
     setVisible(value: boolean): void
-    manipulate(action: (input: Song[]) => Song[]): void
+    isVisible: boolean
+
+    setSongs: React.Dispatch<React.SetStateAction<Song[] | undefined>>
+    setTaken: React.Dispatch<React.SetStateAction<number[]>>
+    setIndex: React.Dispatch<React.SetStateAction<number>>
+    index: number
 }
 
-const SongOptionsDialog: React.FC<Props> = ({ isVisible, setVisible, manipulate }) => {
+const SongOptionsDialog: React.FC<Props> = ({ isVisible, setVisible, setSongs, index, setIndex, setTaken }) => {
     const backgroundVariants: Variants = {
         visible: {
             backgroundColor: "rgba(0,0,0,0.7)",
@@ -37,19 +41,35 @@ const SongOptionsDialog: React.FC<Props> = ({ isVisible, setVisible, manipulate 
         }
     }
 
-    const shuffle = () => manipulate(input => shuffleArray([...input]))
-    const sortByArtist = () => sortBy(song => song.track.artists[0].name)
-    const sortByTitle = () => sortBy(song => song.track.name)
-    const sortByPopularity = () => sortBy(song => song.track.popularity)
+    function manipulateRemaining(action: (input: Song[]) => Song[]) {
+        setSongs(prev => {
+            const done = prev!.slice(0, index)
+            const remaining = prev!.slice(index)
+            const manipulated = action(remaining)
+
+            return [...done, ...manipulated]
+        })
+    }
 
     function sortBy(transform: (song: Song) => string | number) {
-        manipulate(input => [...input].sort((a, b) => {
+        manipulateRemaining(input => [...input].sort((a, b) => {
             const ta = transform(a)
             const tb = transform(b)
             return typeof ta === "string" && typeof tb === "string"
                 ? ta.localeCompare(tb)
                 : ((tb > ta) ? 1 : (tb < ta) ? -1 : 0)
         }))
+    }
+
+    const shuffle = () => manipulateRemaining(input => shuffleArray([...input]))
+    const sortByArtist = () => sortBy(song => song.track.artists[0].name)
+    const sortByTitle = () => sortBy(song => song.track.name)
+    const sortByPopularity = () => sortBy(song => song.track.popularity)
+
+    const restart = () => {
+        setIndex(0)
+        setTaken([])
+        setVisible(false)
     }
 
     return (
@@ -73,8 +93,13 @@ const SongOptionsDialog: React.FC<Props> = ({ isVisible, setVisible, manipulate 
                     </div>
 
                     <DialogButton
+                        onClick={restart}
+                        dangerous className="w-full mt-8">
+                        Reset progress and restart
+                    </DialogButton>
+                    <DialogButton
                         onClick={() => setVisible(false)}
-                        primary className="w-full mt-8">
+                        primary className="w-full mt-2">
                         Close
                     </DialogButton>
                 </motion.div>

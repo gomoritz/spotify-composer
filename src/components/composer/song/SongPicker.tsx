@@ -35,16 +35,6 @@ const SongPicker: React.FC<Props> = ({ includedPlaylists, setIncludedSongs }) =>
     const [index, setIndex] = useState(0)
     const [taken, setTaken] = useState<number[]>([])
 
-    function manipulateRemaining(action: (input: Song[]) => Song[]) {
-        setSongs(prev => {
-            const done = prev!.slice(0, index)
-            const remaining = prev!.slice(index)
-            const manipulated = action(remaining)
-
-            return [...done, ...manipulated]
-        })
-    }
-
     const x = useMotionValue(0)
 
     const [targetVolume, setTargetVolume] = useState(readFromLocalStorage() ?? 0.15)
@@ -116,7 +106,8 @@ const SongPicker: React.FC<Props> = ({ includedPlaylists, setIncludedSongs }) =>
 
                             <SongOptionsButton setOptionsOverlay={setOptionsOverlay} />
                             <SongOptionsDialog isVisible={optionsOverlay} setVisible={setOptionsOverlay}
-                                               manipulate={manipulateRemaining} />
+                                               setSongs={setSongs} setTaken={setTaken}
+                                               index={index} setIndex={setIndex} />
 
                             <SongAudioPreview currentSong={currentSong} key={currentSong.track.id}
                                               targetVolume={targetVolume} />
