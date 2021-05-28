@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { Dispatch, SetStateAction, useEffect, useState } from "react"
 
 type AsyncFunction<T> = () => Promise<T>
 
@@ -8,6 +8,7 @@ interface AsyncResult<T> {
     result: T | undefined
     error: any | undefined
     state: AsyncState
+    setResult: Dispatch<SetStateAction<T | undefined>>
 }
 
 export default function useAsync<T>(func: AsyncFunction<T>): AsyncResult<T> {
@@ -29,6 +30,7 @@ export default function useAsync<T>(func: AsyncFunction<T>): AsyncResult<T> {
     return {
         result: result,
         error: error,
-        state: state
+        state: state,
+        setResult
     }
 }

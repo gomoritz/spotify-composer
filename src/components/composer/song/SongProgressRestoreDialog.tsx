@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import { motion, Variants } from "framer-motion"
+import DialogButton from "@components/composer/song/DialogButton"
 
 type Props = {
     restore: () => void
@@ -33,8 +34,11 @@ const SongProgressRestoreDialog: React.FC<Props> = ({ restore, discard }) => {
             opacity: 1
         },
         hidden: {
-            scale: 0,
-            opacity: 0
+            scale: 0.5,
+            opacity: 0,
+            transition: {
+                type: "spring"
+            }
         }
     }
 
@@ -58,22 +62,8 @@ const SongProgressRestoreDialog: React.FC<Props> = ({ restore, discard }) => {
                         Do you want to restore the progress or discard it and start all over again?
                     </p>
                     <div className="w-full flex flex-row justify-between mt-10">
-                        <motion.div className="w-44 py-1 text-center bg-trueGray-200 text-trueGray-700 rounded-md
-                                    shadow-sm font-medium tracking-tight cursor-pointer"
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
-                                    onClick={() => callback(discard)}
-                        >
-                            Discard
-                        </motion.div>
-                        <motion.div className="w-44 py-1 text-center bg-emerald-300 text-emerald-800 rounded-md
-                                    shadow-sm font-medium tracking-tight cursor-pointer"
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
-                                    onClick={() => callback(restore)}
-                        >
-                            Restore
-                        </motion.div>
+                        <DialogButton onClick={() => callback(discard)}>Discard</DialogButton>
+                        <DialogButton onClick={() => callback(restore)} primary>Restore</DialogButton>
                     </div>
                 </motion.div>
             </div>

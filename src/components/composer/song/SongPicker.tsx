@@ -6,11 +6,13 @@ import SongBackground from "@components/composer/song/SongBackground"
 import useAsync from "@utils/useAsync"
 import { Playlist, Song } from "@typedefs/spotify"
 import { collectSongs, SongLoadingState } from "@spotify/playlists"
-import SongAudioPreview from "@components/composer/song/SongAudioPreview"
-import SongAudioControls from "@components/composer/song/SongAudioControls"
+import SongAudioPreview from "@components/composer/song/audio/SongAudioPreview"
+import SongAudioControls from "@components/composer/song/audio/SongAudioControls"
 import LoadingScreen from "@components/composer/LoadingScreen"
 import { deleteProgress, readProgress, saveProgress, SongPickingProgress } from "@utils/progress"
 import SongProgressRestoreDialog from "@components/composer/song/SongProgressRestoreDialog"
+import SongOptionsButton from "@components/composer/song/manipulation/SongOptionsButton"
+import SongOptionsDialog from "@components/composer/song/manipulation/SongOptionsDialog"
 
 interface Props {
     includedPlaylists: Playlist[]
@@ -21,7 +23,7 @@ const SongPicker: React.FC<Props> = ({ includedPlaylists, setIncludedSongs }) =>
     const [loadingState, setLoadingState] = useState<SongLoadingState>()
     const [progress, setProgress] = useState<SongPickingProgress | null>(null)
     const loadSongs = useCallback(() => collectSongs(includedPlaylists, setLoadingState), [includedPlaylists])
-    const { result: songs, state } = useAsync(loadSongs)
+    const { result: songs, setResult: setSongs, state } = useAsync(loadSongs)
 
     useEffect(() => {
         if (songs) {
@@ -40,6 +42,8 @@ const SongPicker: React.FC<Props> = ({ includedPlaylists, setIncludedSongs }) =>
         writeToLocalStorage(value)
         setTargetVolume(value)
     }
+
+    const [optionsOverlay, setOptionsOverlay] = useState(false)
 
     useEffect(() => {
         if (state === "done" && index === songs!.length) {
@@ -100,7 +104,13 @@ const SongPicker: React.FC<Props> = ({ includedPlaylists, setIncludedSongs }) =>
                                 <SongProgressRestoreDialog restore={restoreProgress} discard={discardProgress} />
                             }
 
-                            <SongAudioPreview currentSong={currentSong} key={currentSong.track.id} targetVolume={targetVolume} />
+                            <SongOptionsButton setOptionsOverlay={setOptionsOverlay} />
+                            <SongOptionsDialog isVisible={optionsOverlay} setVisible={setOptionsOverlay}
+                                               setSongs={setSongs} setTaken={setTaken}
+                                               index={index} setIndex={setIndex} />
+
+                            <SongAudioPreview currentSong={currentSong} key={currentSong.track.id}
+                                              targetVolume={targetVolume} />
                             <SongAudioControls volume={targetVolume} setVolume={setVolume} />
 
                             <SongDragOverlay x={x} onDragEnd={handleDragEnd} />

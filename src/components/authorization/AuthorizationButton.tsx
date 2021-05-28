@@ -2,17 +2,18 @@ import React from "react"
 import { motion } from "framer-motion"
 import constants from "@spotify/constants"
 
-interface Props {
-
-}
-
-const AuthorizationButton: React.FC<Props> = () => {
+const AuthorizationButton: React.FC = () => {
     const requestAuthorization = () => {
-        window.location.href = "https://accounts.spotify.com/authorize" +
+        let link = "https://accounts.spotify.com/authorize" +
             "?client_id=" + constants.client_id +
             "&response_type=" + constants.response_type +
             "&redirect_uri=" + constants.redirect_uri +
             "&scope=" + constants.scopes
+
+        if (process.env.REACT_APP_PREVIEW_ID)
+            link += "&state=" + process.env.REACT_APP_PREVIEW_ID
+
+        window.location.href = link
     }
 
     return (
