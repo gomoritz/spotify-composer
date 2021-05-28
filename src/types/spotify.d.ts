@@ -36,6 +36,7 @@ export interface Song {
         artists: Artist[]
         album: Album
         preview_url?: string
+        popularity: number
     }
 }
 

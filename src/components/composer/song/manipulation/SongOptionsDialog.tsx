@@ -40,7 +40,7 @@ const SongOptionsDialog: React.FC<Props> = ({ isVisible, setVisible, manipulate 
     const shuffle = () => manipulate(input => shuffleArray([...input]))
     const sortByArtist = () => sortBy(song => song.track.artists[0].name)
     const sortByTitle = () => sortBy(song => song.track.name)
-    const sortByPopularity = () => sortBy(song => song.track.duration_ms)
+    const sortByPopularity = () => sortBy(song => song.track.popularity)
 
     function sortBy(transform: (song: Song) => string | number) {
         manipulate(input => [...input].sort((a, b) => {
@@ -48,7 +48,7 @@ const SongOptionsDialog: React.FC<Props> = ({ isVisible, setVisible, manipulate 
             const tb = transform(b)
             return typeof ta === "string" && typeof tb === "string"
                 ? ta.localeCompare(tb)
-                : ((ta < tb) ? -1 : (tb > ta) ? 1 : -1)
+                : ((tb > ta) ? 1 : (tb < ta) ? -1 : 0)
         }))
     }
 

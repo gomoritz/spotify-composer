@@ -37,7 +37,6 @@ const SongPicker: React.FC<Props> = ({ includedPlaylists, setIncludedSongs }) =>
 
     function manipulateRemaining(action: (input: Song[]) => Song[]) {
         setSongs(prev => {
-            console.log("prev =", prev)
             const done = prev!.slice(0, index)
             const remaining = prev!.slice(index)
             const manipulated = action(remaining)
@@ -115,11 +114,12 @@ const SongPicker: React.FC<Props> = ({ includedPlaylists, setIncludedSongs }) =>
                                 <SongProgressRestoreDialog restore={restoreProgress} discard={discardProgress} />
                             }
 
-                            <SongOptionsButton setOptionsOverlay={setOptionsOverlay}/>
+                            <SongOptionsButton setOptionsOverlay={setOptionsOverlay} />
                             <SongOptionsDialog isVisible={optionsOverlay} setVisible={setOptionsOverlay}
-                                               manipulate={manipulateRemaining}/>
+                                               manipulate={manipulateRemaining} />
 
-                            <SongAudioPreview currentSong={currentSong} key={currentSong.track.id} targetVolume={targetVolume} />
+                            <SongAudioPreview currentSong={currentSong} key={currentSong.track.id}
+                                              targetVolume={targetVolume} />
                             <SongAudioControls volume={targetVolume} setVolume={setVolume} />
 
                             <SongDragOverlay x={x} onDragEnd={handleDragEnd} />
