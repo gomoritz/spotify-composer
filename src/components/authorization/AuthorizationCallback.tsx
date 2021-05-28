@@ -26,7 +26,9 @@ const AuthorizationCallback: React.FC = () => {
         }
 
         const previewRedirect = hashParams.get("state")
-        if (previewRedirect && previewIdRegex.test(previewRedirect)) {
+        if (previewRedirect && previewIdRegex.test(previewRedirect) &&
+            previewRedirect !== process.env.REACT_APP_PREVIEW_ID
+        ) {
             setAuthorizationState("Redirecting to preview...")
             window.location.replace(`https://${previewRedirect}.preview.composer.incxption.dev/authorization_callback${hash}`)
             return
