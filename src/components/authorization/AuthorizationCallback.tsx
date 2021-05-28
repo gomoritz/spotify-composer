@@ -1,34 +1,46 @@
 import React, { useEffect, useState } from "react"
 
+const previewIdRegex = /[a-zA-Z0-9]{10}/
+
 const AuthorizationCallback: React.FC = () => {
     const [authorizationState, setAuthorizationState] = useState("Authorizing...")
 
     useEffect(() => {
         const hash = window.location.hash
-        const query = window.location.search
+        const queryParams = new URLSearchParams(window.location.search)
 
-        if (query.length > 0) {
+        if (queryParams.has("error")) {
             setAuthorizationState("Access denied")
-        } else {
-            const parsed = hash.substr(1, hash.length - 1)
-            const params = new URLSearchParams(parsed)
-
-            const accessToken = params.get("access_token")
-            const expiresIn = params.get("expires_in")
-
-            if (accessToken && expiresIn) {
-                const currentSeconds = Date.now() / 1000
-                const expiresAt = currentSeconds + parseInt(expiresIn)
-
-                localStorage.setItem("access_token", accessToken)
-                localStorage.setItem("expires_at", String(expiresAt))
-                setAuthorizationState("Success!")
-                window.location.hash = ""
-                window.location.pathname = "/"
-            } else {
-                setAuthorizationState("Cannot retrieve access token")
-            }
+            return
         }
+
+        const parsed = hash.substr(1, hash.length - 1)
+        const hashParams = new URLSearchParams(parsed)
+
+        const accessToken = hashParams.get("access_token")
+        const expiresIn = hashParams.get("expires_in")
+
+        if (!accessToken || !expiresIn) {
+            setAuthorizationState("Cannot retrieve access token")
+            return
+        }
+
+        const previewRedirect = hashParams.get("state")
+        if (previewRedirect && previewIdRegex.test(previewRedirect)) {
+            setAuthorizationState("Redirecting to preview...")
+            window.location.replace(`https://${previewRedirect}.preview.composer.incxption.dev/authorization_callback${hash}`)
+            return
+        }
+
+        const currentSeconds = Date.now() / 1000
+        const expiresAt = currentSeconds + parseInt(expiresIn)
+
+        localStorage.setItem("access_token", accessToken)
+        localStorage.setItem("expires_at", String(expiresAt))
+        setAuthorizationState("Success!")
+
+        window.location.hash = ""
+        window.location.pathname = "/"
     }, [])
 
     return (
