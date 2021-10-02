@@ -74,6 +74,7 @@ export async function collectSongs(playlists: Playlist[], loadingCallback: (stat
         const songs = playlist.id === "library-pseudo" ? playlist.tracks.items : await getPlaylistTracks(playlist.id)
 
         for (let song of songs) {
+            if (!song.track) continue
             if (isAlreadyAdded(song)) continue
             if (song.is_local || song.track.is_local) continue
             result.push(song)
