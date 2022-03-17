@@ -86,44 +86,59 @@ const SongPicker: React.FC<Props> = ({ includedPlaylists, setIncludedSongs }) =>
         }
     }
 
+    function takeRemaining() {
+        setTaken(prev => {
+            const remaining = Array(songs!.length - index).map((_, i) => i + index)
+            return [...prev, ...remaining]
+        })
+        setIndex(songs!.length)
+    }
+
+    function dropRemaining() {
+        setIndex(songs!.length)
+    }
+
     const currentSong = songs && songs[index]
 
     return (
         <div className="w-full flex-grow overflow-hidden flex">
             <AnimatePresence>
-                {
-                    currentSong && songs ?
-                        <motion.div
-                            className="w-full flex-grow flex overflow-hidden relative"
-                            animate={{ y: 0, opacity: 1 }} initial={{ y: "100%", opacity: 0 }}
-                            transition={{ duration: .6, ease: "easeInOut", bounce: .5 }}
-                            key="picker"
-                        >
-                            {
-                                progress &&
-                                <SongProgressRestoreDialog restore={restoreProgress} discard={discardProgress} />
-                            }
+                {currentSong && songs ? (
+                    <motion.div
+                        className="w-full flex-grow flex overflow-hidden relative"
+                        animate={{ y: 0, opacity: 1 }}
+                        initial={{ y: "100%", opacity: 0 }}
+                        transition={{ duration: 0.6, ease: "easeInOut", bounce: 0.5 }}
+                        key="picker"
+                    >
+                        {progress && <SongProgressRestoreDialog restore={restoreProgress} discard={discardProgress} />}
 
-                            <SongOptionsButton setOptionsOverlay={setOptionsOverlay} />
-                            <SongOptionsDialog isVisible={optionsOverlay} setVisible={setOptionsOverlay}
-                                               setSongs={setSongs} setTaken={setTaken}
-                                               index={index} setIndex={setIndex} />
-
-                            <SongAudioPreview currentSong={currentSong} key={currentSong.track.id}
-                                              targetVolume={targetVolume} />
-                            <SongAudioControls volume={targetVolume} setVolume={setVolume} />
-
-                            <SongDragOverlay x={x} onDragEnd={handleDragEnd} />
-                            <SongDetails x={x} currentSong={currentSong} left={songs.length - index} />
-
-                            <SongBackground currentSong={currentSong} />
-                        </motion.div>
-                        :
-                        <LoadingScreen
-                            title={loadingState?.playlist?.name}
-                            message={loadingState && `${loadingState.songs} unique songs`}
+                        <SongOptionsButton setOptionsOverlay={setOptionsOverlay} />
+                        <SongOptionsDialog
+                            isVisible={optionsOverlay}
+                            setVisible={setOptionsOverlay}
+                            takeRemaining={takeRemaining}
+                            dropRemaining={dropRemaining}
+                            setSongs={setSongs}
+                            setTaken={setTaken}
+                            index={index}
+                            setIndex={setIndex}
                         />
-                }
+
+                        <SongAudioPreview currentSong={currentSong} key={currentSong.track.id} targetVolume={targetVolume} />
+                        <SongAudioControls volume={targetVolume} setVolume={setVolume} />
+
+                        <SongDragOverlay x={x} onDragEnd={handleDragEnd} />
+                        <SongDetails x={x} currentSong={currentSong} left={songs.length - index} />
+
+                        <SongBackground currentSong={currentSong} />
+                    </motion.div>
+                ) : (
+                    <LoadingScreen
+                        title={loadingState?.playlist?.name}
+                        message={loadingState && `${loadingState.songs} unique songs`}
+                    />
+                )}
             </AnimatePresence>
         </div>
     )

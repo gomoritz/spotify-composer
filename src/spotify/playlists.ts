@@ -66,9 +66,8 @@ export interface SongLoadingState {
 
 export async function collectSongs(playlists: Playlist[], loadingCallback: (state: SongLoadingState) => void): Promise<Song[]> {
     const result: Song[] = []
-    const isAlreadyAdded = (song: Song) => !!result.find(
-        it => it.track.id === song.track.id || it.track.external_ids.isrc === song.track.external_ids.isrc
-    )
+    const isAlreadyAdded = (song: Song) =>
+        !!result.find(it => it.track.id === song.track.id || it.track.external_ids.isrc === song.track.external_ids.isrc)
 
     for (let playlist of playlists) {
         const songs = playlist.id === "library-pseudo" ? playlist.tracks.items : await getPlaylistTracks(playlist.id)
@@ -94,9 +93,7 @@ export async function createPlaylist(): Promise<Playlist> {
         headers: authorizationHeaders(),
         body: JSON.stringify({
             name: `${getRandomEmoji()} ${profile.display_name}'s Composed Playlist`,
-            description:
-                "🔥 Generated with the Spotify Composer by Inception Cloud. " +
-                "👉 Create your own one at composer.inceptioncloud.net!"
+            description: "🔥 Generated with the Spotify Composer by incxption. 👉 Create your own one at composer.incxption.dev!"
         })
     })
         .then(res => res.json())
@@ -105,7 +102,7 @@ export async function createPlaylist(): Promise<Playlist> {
 
 export async function addSongsToPlaylist(playlistId: string, songs: Song[]): Promise<any> {
     const copy = [...songs]
-    const fractions: (Song[])[] = []
+    const fractions: Song[][] = []
     const promises: Promise<any>[] = []
 
     while (copy.length > 0) {

@@ -47,6 +47,7 @@
   },
   "devDependencies": {
     "@types/react-router-dom": "^5.1.7",
-    "craco-esbuild": "^0.3.2"
+    "craco-esbuild": "^0.3.2",
+    "prettier": "^2.6.0"
   }
 }
