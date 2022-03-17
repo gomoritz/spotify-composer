@@ -13,9 +13,19 @@ type Props = {
     index: number
 
     takeRemaining: () => void
+    dropRemaining: () => void
 }
 
-const SongOptionsDialog: React.FC<Props> = ({ isVisible, setVisible, takeRemaining, setSongs, index, setIndex, setTaken }) => {
+const SongOptionsDialog: React.FC<Props> = ({
+    isVisible,
+    setVisible,
+    setSongs,
+    index,
+    setIndex,
+    setTaken,
+    takeRemaining,
+    dropRemaining
+}) => {
     const backgroundVariants: Variants = {
         visible: {
             backgroundColor: "rgba(0,0,0,0.7)",
@@ -87,7 +97,7 @@ const SongOptionsDialog: React.FC<Props> = ({ isVisible, setVisible, takeRemaini
                     variants={dialogVariants}
                 >
                     <h1 className="text-xl font-semibold tracking-tight mb-4">Manipulate order</h1>
-                    <div className="w-full grid grid-rows-2 grid-cols-2 grid-flow-col gap-x-4 gap-y-2 justify-items-center">
+                    <div className="w-full grid grid-rows-2 grid-cols-2 gap-x-4 gap-y-2 justify-items-center">
                         <DialogButton className="mr-2 mb-2 w-full" onClick={shuffle}>
                             Shuffle
                         </DialogButton>
@@ -100,12 +110,15 @@ const SongOptionsDialog: React.FC<Props> = ({ isVisible, setVisible, takeRemaini
                         <DialogButton className="mb-2 mr-2 w-full" onClick={sortByPopularity}>
                             Sort by popularity
                         </DialogButton>
+                        <DialogButton className="mb-2 mr-2 w-full" onClick={takeRemaining}>
+                            Take remaining songs
+                        </DialogButton>
+                        <DialogButton className="mb-2 mr-2 w-full" onClick={dropRemaining}>
+                            Drop remaining songs
+                        </DialogButton>
                     </div>
 
-                    <DialogButton onClick={takeRemaining} className="w-full mt-5">
-                        Take remaining tracks
-                    </DialogButton>
-                    <DialogButton onClick={restart} dangerous className="w-full mt-2">
+                    <DialogButton onClick={restart} dangerous className="w-full mt-2 mt-5">
                         Reset progress and restart
                     </DialogButton>
                     <DialogButton onClick={() => setVisible(false)} primary className="w-full mt-2">

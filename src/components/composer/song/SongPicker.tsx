@@ -94,6 +94,10 @@ const SongPicker: React.FC<Props> = ({ includedPlaylists, setIncludedSongs }) =>
         setIndex(songs!.length)
     }
 
+    function dropRemaining() {
+        setIndex(songs!.length)
+    }
+
     const currentSong = songs && songs[index]
 
     return (
@@ -114,6 +118,7 @@ const SongPicker: React.FC<Props> = ({ includedPlaylists, setIncludedSongs }) =>
                             isVisible={optionsOverlay}
                             setVisible={setOptionsOverlay}
                             takeRemaining={takeRemaining}
+                            dropRemaining={dropRemaining}
                             setSongs={setSongs}
                             setTaken={setTaken}
                             index={index}
