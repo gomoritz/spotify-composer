@@ -11,9 +11,11 @@ type Props = {
     setTaken: React.Dispatch<React.SetStateAction<number[]>>
     setIndex: React.Dispatch<React.SetStateAction<number>>
     index: number
+
+    takeRemaining: () => void
 }
 
-const SongOptionsDialog: React.FC<Props> = ({ isVisible, setVisible, setSongs, index, setIndex, setTaken }) => {
+const SongOptionsDialog: React.FC<Props> = ({ isVisible, setVisible, takeRemaining, setSongs, index, setIndex, setTaken }) => {
     const backgroundVariants: Variants = {
         visible: {
             backgroundColor: "rgba(0,0,0,0.7)",
@@ -52,13 +54,13 @@ const SongOptionsDialog: React.FC<Props> = ({ isVisible, setVisible, setSongs, i
     }
 
     function sortBy(transform: (song: Song) => string | number) {
-        manipulateRemaining(input => [...input].sort((a, b) => {
-            const ta = transform(a)
-            const tb = transform(b)
-            return typeof ta === "string" && typeof tb === "string"
-                ? ta.localeCompare(tb)
-                : ((tb > ta) ? 1 : (tb < ta) ? -1 : 0)
-        }))
+        manipulateRemaining(input =>
+            [...input].sort((a, b) => {
+                const ta = transform(a)
+                const tb = transform(b)
+                return typeof ta === "string" && typeof tb === "string" ? ta.localeCompare(tb) : tb > ta ? 1 : tb < ta ? -1 : 0
+            })
+        )
     }
 
     const shuffle = () => manipulateRemaining(input => shuffleArray([...input]))
@@ -85,21 +87,28 @@ const SongOptionsDialog: React.FC<Props> = ({ isVisible, setVisible, setSongs, i
                     variants={dialogVariants}
                 >
                     <h1 className="text-xl font-semibold tracking-tight mb-4">Manipulate order</h1>
-                    <div className="w-full flex flex-row flex-wrap justify-center">
-                        <DialogButton className="mr-2 mb-2" onClick={shuffle}>Shuffle</DialogButton>
-                        <DialogButton className="mr-2 mb-2" onClick={sortByArtist}>Sort by artist</DialogButton>
-                        <DialogButton className="mb-2 mr-2" onClick={sortByTitle}>Sort by title</DialogButton>
-                        <DialogButton className="mb-2 mr-2" onClick={sortByPopularity}>Sort by popularity</DialogButton>
+                    <div className="w-full grid grid-rows-2 grid-cols-2 grid-flow-col gap-x-4 gap-y-2 justify-items-center">
+                        <DialogButton className="mr-2 mb-2 w-full" onClick={shuffle}>
+                            Shuffle
+                        </DialogButton>
+                        <DialogButton className="mr-2 mb-2 w-full" onClick={sortByArtist}>
+                            Sort by artist
+                        </DialogButton>
+                        <DialogButton className="mb-2 mr-2 w-full" onClick={sortByTitle}>
+                            Sort by title
+                        </DialogButton>
+                        <DialogButton className="mb-2 mr-2 w-full" onClick={sortByPopularity}>
+                            Sort by popularity
+                        </DialogButton>
                     </div>
 
-                    <DialogButton
-                        onClick={restart}
-                        dangerous className="w-full mt-8">
+                    <DialogButton onClick={takeRemaining} className="w-full mt-5">
+                        Take remaining tracks
+                    </DialogButton>
+                    <DialogButton onClick={restart} dangerous className="w-full mt-2">
                         Reset progress and restart
                     </DialogButton>
-                    <DialogButton
-                        onClick={() => setVisible(false)}
-                        primary className="w-full mt-2">
+                    <DialogButton onClick={() => setVisible(false)} primary className="w-full mt-2">
                         Close
                     </DialogButton>
                 </motion.div>
@@ -113,8 +122,8 @@ const SongOptionsDialog: React.FC<Props> = ({ isVisible, setVisible, setSongs, i
  */
 function shuffleArray<T>(a: T[]) {
     for (let i = a.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [a[i], a[j]] = [a[j], a[i]]
+        const j = Math.floor(Math.random() * (i + 1))
+        ;[a[i], a[j]] = [a[j], a[i]]
     }
     return a
 }
