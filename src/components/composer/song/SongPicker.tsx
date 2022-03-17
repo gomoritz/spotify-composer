@@ -88,7 +88,9 @@ const SongPicker: React.FC<Props> = ({ includedPlaylists, setIncludedSongs }) =>
 
     function takeRemaining() {
         setTaken(prev => {
-            const remaining = Array(songs!.length - index).map((_, i) => i + index)
+            const remaining = Array(songs!.length - index)
+                .fill(undefined)
+                .map((_, i) => i + index)
             return [...prev, ...remaining]
         })
         setIndex(songs!.length)
