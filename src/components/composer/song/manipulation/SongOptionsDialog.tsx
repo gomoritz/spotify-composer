@@ -77,6 +77,7 @@ const SongOptionsDialog: React.FC<Props> = ({
     const sortByArtist = () => sortBy(song => song.track.artists[0].name)
     const sortByTitle = () => sortBy(song => song.track.name)
     const sortByPopularity = () => sortBy(song => song.track.popularity)
+    const reverse = () => manipulateRemaining(input => input.reverse())
 
     const restart = () => {
         setIndex(0)
@@ -115,6 +116,9 @@ const SongOptionsDialog: React.FC<Props> = ({
                         </DialogButton>
                         <DialogButton className="mb-2 mr-2 w-full" onClick={dropRemaining}>
                             Drop remaining songs
+                        </DialogButton>
+                        <DialogButton className="mb-2 mr-2 w-full" onClick={reverse}>
+                            Reverse order
                         </DialogButton>
                     </div>
 
