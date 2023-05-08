@@ -93,7 +93,7 @@ export async function createPlaylist(): Promise<Playlist> {
         headers: authorizationHeaders(),
         body: JSON.stringify({
             name: `${getRandomEmoji()} ${profile.display_name}'s Composed Playlist`,
-            description: "🔥 Generated with the Spotify Composer by incxption. 👉 Create your own one at composer.incxption.dev!"
+            description: "🔥 Generated with the Spotify Composer by incxption. 👉 Create your own one at composer.goessl.me!"
         })
     })
         .then(res => res.json())

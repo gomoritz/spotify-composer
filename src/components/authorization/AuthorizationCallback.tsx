@@ -30,7 +30,7 @@ const AuthorizationCallback: React.FC = () => {
             previewRedirect !== process.env.REACT_APP_PREVIEW_ID
         ) {
             setAuthorizationState("Redirecting to preview...")
-            window.location.replace(`https://${previewRedirect}.preview.composer.incxption.dev/authorization_callback${hash}`)
+            window.location.replace(`https://${previewRedirect}.preview.composer.goessl.me/authorization_callback${hash}`)
             return
         }
 

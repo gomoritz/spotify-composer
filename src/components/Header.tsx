@@ -34,7 +34,7 @@ const Header: React.FC<Props> = () => {
                     </p>
                     <p className="text-sm font-normal tracking-tight text-white opacity-75 -mt-1">
                         by{" "}
-                        <a href="https://incxption.dev" className="underline">
+                        <a href="https://goessl.me" className="underline">
                             inception
                         </a>
                     </p>
