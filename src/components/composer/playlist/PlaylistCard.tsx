@@ -73,7 +73,7 @@ const PlaylistCard: React.FC<Props> = ({ playlist, isSelected, togglePlaylist })
                 <p className="font-semibold truncate whitespace-nowrap pr-2">
                     {playlist.name}
                 </p>
-                <p className="text-trueGray-600 flex-nowrap whitespace-nowrap">
+                <p className="text-neutral-600 flex-nowrap whitespace-nowrap">
                     {playlist.tracks.total} songs
                 </p>
             </div>

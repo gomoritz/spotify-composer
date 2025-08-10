@@ -94,7 +94,7 @@ const SongOptionsDialog: React.FC<Props> = ({
         >
             <div className="mx-auto max-w-screen-lg h-full flex justify-center items-center">
                 <motion.div
-                    className="bg-trueGray-100 shadow-lg rounded-lg flex flex-col w-1/2 text-center px-10 py-7"
+                    className="bg-neutral-100 shadow-lg rounded-lg flex flex-col w-1/2 text-center px-10 py-7"
                     variants={dialogVariants}
                 >
                     <h1 className="text-xl font-semibold tracking-tight mb-4">Manipulate order</h1>
