@@ -2,18 +2,10 @@
     "compilerOptions": {
         "baseUrl": "./src",
         "paths": {
-            "@components/*": [
-                "components/*"
-            ],
-            "@spotify/*": [
-                "spotify/*"
-            ],
-            "@typedefs/*": [
-                "types/*"
-            ],
-            "@utils/*": [
-                "utils/*"
-            ]
+            "@components/*": ["components/*"],
+            "@spotify/*": ["spotify/*"],
+            "@typedefs/*": ["types/*"],
+            "@utils/*": ["utils/*"]
         }
     }
 }
