@@ -13,7 +13,7 @@ interface Props {
 
 const FinishScreen: React.FC<Props> = ({ songs }) => {
     const [working, setWorking] = useState(false)
-    const [order, updatePosition, updateOrder] = usePositionReorder(songs)
+    const [order, updatePosition, updateOrder] = usePositionReorder<Song>(songs)
 
     function finish() {
         if (working) return
@@ -58,3 +58,4 @@ const FinishScreen: React.FC<Props> = ({ songs }) => {
 }
 
 export default FinishScreen
+

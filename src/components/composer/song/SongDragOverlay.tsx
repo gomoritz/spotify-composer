@@ -1,9 +1,9 @@
-import { motion, MotionValue, useTransform } from "framer-motion"
+import { motion, MotionValue, useTransform } from "motion/react"
 import React from "react"
 
 type Props = {
-    x: MotionValue<number>,
-    onDragEnd: () => void,
+    x: MotionValue<number>
+    onDragEnd: () => void
 }
 
 const SongDragOverlay: React.FC<Props> = ({ onDragEnd, x }) => {
@@ -29,3 +29,4 @@ const SongDragOverlay: React.FC<Props> = ({ onDragEnd, x }) => {
 }
 
 export default SongDragOverlay
+

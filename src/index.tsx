@@ -1,13 +1,2 @@
-import React from "react"
-import ReactDOM from "react-dom"
-import App from "./components/App"
+// Entry is now handled by Next.js App Router. This file is unused.
 
-import "./styles/index.css"
-import "./styles/tailwind.css"
-
-ReactDOM.render(
-    <React.StrictMode>
-        <App/>
-    </React.StrictMode>,
-    document.getElementById("root")
-)

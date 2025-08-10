@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from "react"
 import { Song } from "@typedefs/spotify"
 import interpolate, { Interpolation } from "@utils/interpolate"
-import { motion } from "framer-motion"
+import { motion } from "motion/react"
 
 type Props = {
     currentSong: Song
@@ -14,21 +14,25 @@ const SongAudioPreview: React.FC<Props> = ({ currentSong, targetVolume }) => {
     const audioRef = useRef<HTMLAudioElement | null>(null)
     const [progress, setProgress] = useState(0)
 
-    const fadeInRef = useRef<Interpolation>(interpolate({
-        from: 0,
-        to: targetVolume,
-        steps: 10,
-        duration: 100,
-        action: (volume) => audioRef.current!.volume = coerceVolume(volume)
-    }))
+    const fadeInRef = useRef<Interpolation>(
+        interpolate({
+            from: 0,
+            to: targetVolume,
+            steps: 10,
+            duration: 100,
+            action: volume => (audioRef.current!.volume = coerceVolume(volume))
+        })
+    )
 
-    const fadeOutRef = useRef<Interpolation>(interpolate({
-        from: targetVolume,
-        to: 0,
-        steps: 10,
-        duration: 100,
-        action: (volume) => audioRef.current!.volume = coerceVolume(volume)
-    }))
+    const fadeOutRef = useRef<Interpolation>(
+        interpolate({
+            from: targetVolume,
+            to: 0,
+            steps: 10,
+            duration: 100,
+            action: volume => (audioRef.current!.volume = coerceVolume(volume))
+        })
+    )
 
     useEffect(() => {
         setProgress(0)
@@ -92,15 +96,17 @@ const SongAudioPreview: React.FC<Props> = ({ currentSong, targetVolume }) => {
         }
     }, [targetVolume, currentSong])
 
-    return audioRef.current && (
-        <>
-            <div className="absolute bottom-0 left-0 w-full z-30 h-1.5 bg-emerald-700"/>
-            <motion.div
-                className="absolute bottom-0 left-0 z-30 h-1.5 bg-emerald-500"
-                animate={{ width: `${progress}%` }}
-                transition={{ ease: "linear", duration: progress === 0 ? 0 : 1 }}
-            />
-        </>
+    return (
+        audioRef.current && (
+            <>
+                <div className="absolute bottom-0 left-0 w-full z-30 h-1.5 bg-emerald-700" />
+                <motion.div
+                    className="absolute bottom-0 left-0 z-30 h-1.5 bg-emerald-500"
+                    animate={{ width: `${progress}%` }}
+                    transition={{ ease: "linear", duration: progress === 0 ? 0 : 1 }}
+                />
+            </>
+        )
     )
 }
 
@@ -109,3 +115,4 @@ function coerceVolume(volume: number) {
 }
 
 export default SongAudioPreview
+

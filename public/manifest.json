@@ -1,6 +1,6 @@
 {
-    "short_name": "Inception React App",
-    "name": "React App Using CRA And The Inception Template",
+    "short_name": "Composer",
+    "name": "Spotify Composer",
     "icons": [
         {
             "src": "favicon.ico",
@@ -13,8 +13,9 @@
             "sizes": "512x512"
         }
     ],
-    "start_url": ".",
+    "start_url": "/",
     "display": "standalone",
-    "theme_color": "#000000",
+    "theme_color": "#10B981",
     "background_color": "#ffffff"
 }
+

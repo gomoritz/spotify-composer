@@ -1,5 +1,5 @@
 import React, { useRef } from "react"
-import { motion, MotionValue, useTransform } from "framer-motion"
+import { motion, MotionValue, useTransform } from "motion/react"
 import { Song } from "@typedefs/spotify"
 
 type Props = {
@@ -44,3 +44,4 @@ const SongDetails: React.FC<Props> = ({ currentSong, x, left }) => {
 }
 
 export default SongDetails
+

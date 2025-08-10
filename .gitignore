@@ -25,3 +25,7 @@ yarn-error.log*
 
 /.idea
 spotify-playlist-composer.iml
+
+# Next.js
+.next
+*.tsbuildinfo

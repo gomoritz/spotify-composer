@@ -1,5 +1,5 @@
 import React from "react"
-import { motion } from "framer-motion"
+import { motion } from "motion/react"
 
 type Props = {
     title?: string
@@ -11,18 +11,19 @@ const LoadingScreen: React.FC<Props> = ({ title, message }) => {
         <motion.div
             className="absolute top-0 left-0 w-full h-full flex flex-col justify-center items-center"
             exit={{ y: "-100%", opacity: 0 }}
-            transition={{ duration: .6, ease: "easeInOut", bounce: .5 }}
+            transition={{ duration: 0.6, ease: "easeInOut", bounce: 0.5 }}
             key="loading-screen"
         >
             <div className="my-20">
                 {[0, 1, 2].map(i => (
                     <motion.span
-                        key={i} className="w-5 h-5 mx-1 rounded-full bg-emerald-500 inline-block shadow-md"
+                        key={i}
+                        className="w-5 h-5 mx-1 rounded-full bg-emerald-500 inline-block shadow-md"
                         initial={{ y: -15 }}
                         animate={{ y: [-15, 15, -15] }}
                         transition={{
                             duration: 1,
-                            delay: i * .2,
+                            delay: i * 0.2,
                             ease: "easeInOut",
                             repeat: Infinity
                         }}
@@ -38,3 +39,4 @@ const LoadingScreen: React.FC<Props> = ({ title, message }) => {
 }
 
 export default LoadingScreen
+

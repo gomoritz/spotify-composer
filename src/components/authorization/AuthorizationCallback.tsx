@@ -1,3 +1,4 @@
+"use client"
 import React, { useEffect, useState } from "react"
 
 const previewIdRegex = /[a-zA-Z0-9]{10}/
@@ -26,9 +27,7 @@ const AuthorizationCallback: React.FC = () => {
         }
 
         const previewRedirect = hashParams.get("state")
-        if (previewRedirect && previewIdRegex.test(previewRedirect) &&
-            previewRedirect !== process.env.REACT_APP_PREVIEW_ID
-        ) {
+        if (previewRedirect && previewIdRegex.test(previewRedirect) && previewRedirect !== process.env.NEXT_PUBLIC_PREVIEW_ID) {
             setAuthorizationState("Redirecting to preview...")
             window.location.replace(`https://${previewRedirect}.preview.composer.goessl.me/authorization_callback${hash}`)
             return
@@ -45,11 +44,8 @@ const AuthorizationCallback: React.FC = () => {
         window.location.pathname = "/"
     }, [])
 
-    return (
-        <div className="flex justify-center items-center flex-grow">
-            {authorizationState}
-        </div>
-    )
+    return <div className="flex justify-center items-center flex-grow">{authorizationState}</div>
 }
 
 export default AuthorizationCallback
+

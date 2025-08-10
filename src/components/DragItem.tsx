@@ -1,12 +1,13 @@
 import React from "react"
-import { motion } from "framer-motion"
+import { motion } from "motion/react"
 import { useState } from "react"
 import { useMeasurePosition } from "@utils/useMeasurePosition"
 
 type Props = {
-    i: any
+    i: number
     updatePosition: (i: number, offset: any) => void
     updateOrder: (i: number, dragOffset: any) => void
+    children?: React.ReactNode
 }
 
 const DragItem: React.FC<Props> = ({ i, updatePosition, updateOrder, children }) => {
@@ -16,7 +17,7 @@ const DragItem: React.FC<Props> = ({ i, updatePosition, updateOrder, children })
         <div
             style={{
                 padding: 0,
-                zIndex: isDragging ? 9999 : 1,
+                zIndex: isDragging ? 9999 : 1
             }}
         >
             <motion.div
@@ -26,19 +27,20 @@ const DragItem: React.FC<Props> = ({ i, updatePosition, updateOrder, children })
                 style={{
                     background: "white",
                     marginBottom: 10,
-                    borderRadius: 5,
+                    borderRadius: 5
                 }}
                 whileHover={{
-                    boxShadow: "0px 3px 3px rgba(0,0,0,0.15)",
+                    boxShadow: "0px 3px 3px rgba(0,0,0,0.15)"
                 }}
                 whileTap={{
-                    boxShadow: "0px 5px 5px rgba(0,0,0,0.1)",
+                    boxShadow: "0px 5px 5px rgba(0,0,0,0.1)"
                 }}
                 drag="y"
                 onDragStart={() => setDragging(true)}
                 onDragEnd={() => setDragging(false)}
-                onViewportBoxUpdate={(_viewportBox, delta) => {
-                    isDragging && updateOrder(i, delta.y.translate)
+                onDrag={(_event, info) => {
+                    const deltaY = (info as any)?.delta?.y ?? 0
+                    if (isDragging) updateOrder(i, deltaY)
                 }}
             >
                 {children}
@@ -48,3 +50,4 @@ const DragItem: React.FC<Props> = ({ i, updatePosition, updateOrder, children })
 }
 
 export default DragItem
+

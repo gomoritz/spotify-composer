@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react"
-import { AnimatePresence, motion, useMotionValue } from "framer-motion"
+import { motion, useMotionValue } from "motion/react"
+import { AnimatePresence } from "motion/react"
 import SongDragOverlay from "@components/composer/song/SongDragOverlay"
 import SongDetails from "@components/composer/song/SongDetails"
 import SongBackground from "@components/composer/song/SongBackground"
@@ -159,3 +160,4 @@ function readFromLocalStorage(): number | null {
 }
 
 export default SongPicker
+

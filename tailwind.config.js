@@ -1,17 +1,9 @@
-const colors = require("tailwindcss/colors")
-
+/** @type {import('tailwindcss').Config} */
 module.exports = {
-    purge: ["./src/**/*.{js,jsx,ts,tsx}", "./public/index.html"],
-    darkMode: "class",
+    content: ["./app/**/*.{js,ts,jsx,tsx}", "./src/**/*.{js,ts,jsx,tsx}"],
     theme: {
-        colors: {
-            ...colors
-        }
-    },
-    variants: {
-        extend: {
-            scale: ["group-hover"]
-        }
+        extend: {}
     },
     plugins: []
 }
+
