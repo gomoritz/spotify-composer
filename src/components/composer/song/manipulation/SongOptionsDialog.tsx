@@ -1,7 +1,7 @@
 import React from "react"
-import { motion, Variants } from "framer-motion"
-import DialogButton from "@components/composer/song/DialogButton"
-import { Song } from "@typedefs/spotify"
+import { motion, Variants } from "motion/react"
+import DialogButton from "@/components/composer/song/DialogButton"
+import { Song } from "@/types/spotify"
 
 type Props = {
     setVisible(value: boolean): void

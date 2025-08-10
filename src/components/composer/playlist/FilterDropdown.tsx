@@ -1,6 +1,8 @@
-import { AnimatePresence, motion } from "framer-motion"
+"use client"
+
+import { AnimatePresence, motion } from "motion/react"
 import React, { useState } from "react"
-import { Filter } from "@components/composer/playlist/PlaylistPicker"
+import { Filter } from "@/components/composer/playlist/PlaylistPicker"
 
 type Props = {
 	current: Filter

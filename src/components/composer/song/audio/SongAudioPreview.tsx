@@ -1,9 +1,11 @@
+"use client"
+
 /* eslint-disable react-hooks/exhaustive-deps */
 // ^ these checks are disabled because the changing of refs before an effect is cleared is intended
 import React, { useEffect, useRef, useState } from "react"
-import { Song } from "@typedefs/spotify"
-import interpolate, { Interpolation } from "@utils/interpolate"
-import { motion } from "framer-motion"
+import { Song } from "@/types/spotify"
+import interpolate, { Interpolation } from "@/utils/interpolate"
+import { motion } from "motion/react"
 
 type Props = {
     currentSong: Song

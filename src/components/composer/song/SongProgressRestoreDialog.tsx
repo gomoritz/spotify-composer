@@ -1,6 +1,8 @@
+"use client"
+
 import React, { useState } from "react"
-import { motion, Variants } from "framer-motion"
-import DialogButton from "@components/composer/song/DialogButton"
+import { motion, Variants } from "motion/react"
+import DialogButton from "@/components/composer/song/DialogButton"
 
 type Props = {
     restore: () => void

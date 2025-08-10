@@ -1,6 +1,6 @@
-import { motion } from "framer-motion"
+import { motion } from "motion/react"
 import React from "react"
-import { IoOptions } from "react-icons/all"
+import { IoOptions } from "react-icons/io5"
 
 type Props = {
     setOptionsOverlay(value: boolean): void

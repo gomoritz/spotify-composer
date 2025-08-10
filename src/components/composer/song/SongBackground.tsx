@@ -1,5 +1,5 @@
 import React from "react"
-import { Song } from "@typedefs/spotify"
+import { Song } from "@/types/spotify"
 
 type Props = { currentSong: Song }
 

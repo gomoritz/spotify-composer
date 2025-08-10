@@ -1,11 +1,12 @@
-import React, { useState } from "react"
-import SongItem from "@components/composer/finish/SongItem"
-import FinishButton from "@components/composer/finish/FinishButton"
-import PlaylistCover from "@components/composer/finish/PlaylistCover"
-import DragItem from "@components/DragItem"
-import { addSongsToPlaylist, createPlaylist } from "@spotify/playlists"
-import { Song } from "@typedefs/spotify"
-import { usePositionReorder } from "@utils/usePositionReorder"
+"use client"
+
+import React, { useState, useEffect } from "react"
+import { Reorder } from "motion/react"
+import SongItem from "@/components/composer/finish/SongItem"
+import FinishButton from "@/components/composer/finish/FinishButton"
+import PlaylistCover from "@/components/composer/finish/PlaylistCover"
+import { addSongsToPlaylist, createPlaylist } from "@/spotify/playlists"
+import { Song } from "@/types/spotify"
 
 interface Props {
     songs: Song[]
@@ -13,7 +14,11 @@ interface Props {
 
 const FinishScreen: React.FC<Props> = ({ songs }) => {
     const [working, setWorking] = useState(false)
-    const [order, updatePosition, updateOrder] = usePositionReorder(songs)
+    const [order, setOrder] = useState(songs)
+
+    useEffect(() => {
+        setOrder(songs)
+    }, [songs])
 
     function finish() {
         if (working) return
@@ -33,7 +38,7 @@ const FinishScreen: React.FC<Props> = ({ songs }) => {
 
     return (
         <div className="w-full max-w-screen-lg mx-auto px-5 flex-grow flex flex-col items-center pt-10">
-            <h1 className="text-2xl text-center font-bold tracking-tight">🎉 You're done!</h1>
+            <h1 className="text-2xl text-center font-bold tracking-tight">🎉 You&apos;re done!</h1>
             <p className="text-lg text-center leading-6 mt-2 tracking-tight opacity-70 max-w-xl">
                 A new playlist has been built based on the
                 <span className="font-semibold">
@@ -45,13 +50,13 @@ const FinishScreen: React.FC<Props> = ({ songs }) => {
             <div className="mt-5">
                 <PlaylistCover songs={order} />
             </div>
-            <div className="w-full my-10 ">
-                {order.map((song: Song, i: number) => (
-                    <DragItem i={i} key={song.track.id} updateOrder={updateOrder} updatePosition={updatePosition}>
+            <Reorder.Group axis="y" values={order} onReorder={setOrder} className="w-full my-10">
+                {order.map((song: Song) => (
+                    <Reorder.Item key={song.track.id} value={song}>
                         <SongItem song={song} />
-                    </DragItem>
+                    </Reorder.Item>
                 ))}
-            </div>
+            </Reorder.Group>
             <FinishButton onClick={finish} working={working} />
         </div>
     )

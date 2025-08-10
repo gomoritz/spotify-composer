@@ -1,6 +1,6 @@
 import React, { useRef } from "react"
-import { motion, MotionValue, useTransform } from "framer-motion"
-import { Song } from "@typedefs/spotify"
+import { motion, MotionValue, useTransform } from "motion/react"
+import { Song } from "@/types/spotify"
 
 type Props = {
     currentSong: Song

@@ -1,4 +1,4 @@
-import { motion } from "framer-motion"
+import { motion } from "motion/react"
 import React from "react"
 
 type Props = {
@@ -6,6 +6,7 @@ type Props = {
     primary?: boolean
     dangerous?: boolean
     className?: string
+    children: React.ReactNode
 }
 
 const DialogButton: React.FC<Props> = ({ onClick, primary, dangerous, className, children }) => {

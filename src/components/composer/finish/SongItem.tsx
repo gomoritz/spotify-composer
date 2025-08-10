@@ -1,5 +1,6 @@
 import React from "react"
-import { Song } from "@typedefs/spotify"
+import Image from "next/image"
+import { Song } from "@/types/spotify"
 
 interface Props {
     song: Song
@@ -14,7 +15,9 @@ const SongItem: React.FC<Props> = ({ song }) => {
 
     return (
         <div key={song.track.id} className="w-full bg-white rounded-lg shadow-sm my-2 flex h-12">
-            <img src={cover} style={{ opacity: cover ? "1" : "0" }} alt="album cover" className="h-12 w-12 rounded-l-lg"/>
+            {cover && (
+                <Image src={cover} alt="album cover" className="h-12 w-12 rounded-l-lg" width={48} height={48} />
+            )}
             <div className="h-full flex flex-col flex-grow justify-center ml-2 mr-4 overflow-hidden">
                 <h1 className="text-md font-medium tracking-tight truncate">{song.track.name}</h1>
                 <p className="text-sm leading-4 font-light tracking-tight truncate">

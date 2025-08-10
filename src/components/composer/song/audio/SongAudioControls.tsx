@@ -1,6 +1,8 @@
+"use client"
+
 import React, { useEffect, useRef, useState } from "react"
 import { IoVolumeHighOutline, IoVolumeLowOutline, IoVolumeMediumOutline, IoVolumeMuteOutline, IoVolumeOffOutline } from "react-icons/io5"
-import { AnimatePresence, motion, useDragControls, useMotionValue } from "framer-motion"
+import { AnimatePresence, motion, useDragControls, useMotionValue } from "motion/react"
 import { isMobile } from "react-device-detect"
 
 type Props = {
@@ -20,7 +22,7 @@ const SongAudioControls: React.FC<Props> = ({ volume, setVolume }) => {
     const dragControls = useDragControls()
 
     useEffect(() => {
-        y.set(100 - percentage, true)
+        y.set(100 - percentage)
     }, [y, percentage, volume])
 
     const Icon = percentage === 0 ? IoVolumeMuteOutline :
@@ -40,7 +42,7 @@ const SongAudioControls: React.FC<Props> = ({ volume, setVolume }) => {
         setVolume(coerced)
     }
 
-    const snap: React.MouseEventHandler<HTMLDivElement> = (event) => {
+    const snap: React.PointerEventHandler<HTMLDivElement> = (event) => {
         dragControls.start(event, { snapToCursor: true })
         updateVolume()
     }
@@ -78,7 +80,7 @@ const SongAudioControls: React.FC<Props> = ({ volume, setVolume }) => {
                         className="w-1 h-28 rounded-full bg-white bg-opacity-90 mt-4 cursor-pointer origin-top"
                         style={{ filter: "drop-shadow(0px 0px 3px rgba(0, 0, 0, .3))" }}
                         variants={variants} initial="collapsed" animate="expanded" exit="collapsed"
-                        onClick={snap}
+                        onPointerDown={snap}
                     >
                         <motion.div
                             key="circle"

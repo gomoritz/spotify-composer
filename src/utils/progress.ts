@@ -1,4 +1,4 @@
-import { Song } from "@typedefs/spotify"
+import { Song } from "@/types/spotify"
 import crypto from "crypto"
 
 const LOCAL_STORAGE_PREFIX = "scp-"

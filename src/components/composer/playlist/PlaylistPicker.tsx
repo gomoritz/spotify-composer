@@ -1,12 +1,14 @@
+"use client"
+
 import React, { useEffect, useState } from "react"
-import { AnimatePresence, motion } from "framer-motion"
+import { AnimatePresence, motion } from "motion/react"
 import FilterDropdown from "./FilterDropdown"
 import PlaylistCard from "./PlaylistCard"
-import useAsync from "@utils/useAsync"
-import { getProfile } from "@spotify/profile"
-import { buildPseudoPlaylistFromLibrary, getPlaylists } from "@spotify/playlists"
-import { Playlist } from "@typedefs/spotify"
-import LoadingScreen from "@components/composer/LoadingScreen"
+import useAsync from "@/utils/useAsync"
+import { getProfile } from "@/spotify/profile"
+import { buildPseudoPlaylistFromLibrary, getPlaylists } from "@/spotify/playlists"
+import { Playlist } from "@/types/spotify"
+import LoadingScreen from "@/components/composer/LoadingScreen"
 
 interface Props {
     setIncludedPlaylists: (playlists: Playlist[]) => void

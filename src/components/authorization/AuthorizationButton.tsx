@@ -1,6 +1,6 @@
 import React from "react"
-import { motion } from "framer-motion"
-import constants from "@spotify/constants"
+import { motion } from "motion/react"
+import constants from "@/spotify/constants"
 
 const AuthorizationButton: React.FC = () => {
     const requestAuthorization = () => {

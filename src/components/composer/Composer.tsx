@@ -1,8 +1,10 @@
+"use client"
+
 import React, { useState } from "react"
-import PlaylistPicker from "@components/composer/playlist/PlaylistPicker"
-import SongPicker from "@components/composer/song/SongPicker"
-import FinishScreen from "@components/composer/finish/FinishScreen"
-import { Playlist, Song } from "@typedefs/spotify"
+import PlaylistPicker from "@/components/composer/playlist/PlaylistPicker"
+import SongPicker from "@/components/composer/song/SongPicker"
+import FinishScreen from "@/components/composer/finish/FinishScreen"
+import { Playlist, Song } from "@/types/spotify"
 
 const Composer: React.FC = () => {
     const [includedPlaylists, setIncludedPlaylists] = useState<Playlist[] | null>(null)

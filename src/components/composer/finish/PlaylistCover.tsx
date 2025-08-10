@@ -1,5 +1,7 @@
+"use client"
+
 import React, { useEffect, useRef, useState } from "react"
-import { Image, Song } from "@typedefs/spotify"
+import { Image, Song } from "@/types/spotify"
 
 type Props = {
     songs: Song[]

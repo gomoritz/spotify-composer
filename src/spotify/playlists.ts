@@ -1,6 +1,6 @@
 import { authorizationHeaders } from "./authorization"
 import { getProfile, getSavedSongs } from "./profile"
-import { Image, Playlist, PlaylistCollection, Song, SongCollection } from "@typedefs/spotify"
+import { Image, Playlist, PlaylistCollection, Song, SongCollection } from "@/types/spotify"
 
 export async function getPlaylists(next?: string): Promise<Playlist[]> {
     const response: PlaylistCollection = await fetch(next ?? "https://api.spotify.com/v1/me/playlists?limit=50", {

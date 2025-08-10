@@ -1,4 +1,4 @@
-import { AnimatePresence, motion, Variants } from "framer-motion"
+import { AnimatePresence, motion, Variants } from "motion/react"
 import React from "react"
 
 type Props = {
