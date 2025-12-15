@@ -1,3 +1,6 @@
+import constants from "@/spotify/constants"
+import { getCodeVerifier } from "@/utils/pkce"
+
 export function getAccessToken(): string | null {
     const accessToken = localStorage.getItem("access_token")
     const expiresAtString = localStorage.getItem("expires_at")
@@ -13,6 +16,22 @@ export function getAccessToken(): string | null {
     }
 
     return accessToken
+}
+
+export async function requestAccessTokenFromPKCE(code: string) {
+    const response = await fetch("https://accounts.spotify.com/api/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+            client_id: constants.client_id!,
+            grant_type: "authorization_code",
+            redirect_uri: constants.redirect_uri,
+            code_verifier: getCodeVerifier(),
+            code
+        })
+    })
+
+    return await response.json()
 }
 
 export function authorizationHeaders() {

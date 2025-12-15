@@ -1,19 +1,24 @@
 import React from "react"
 import { motion } from "motion/react"
 import constants from "@/spotify/constants"
+import { getCodeChallenge } from "@/utils/pkce"
 
 const AuthorizationButton: React.FC = () => {
-    const requestAuthorization = () => {
-        let link = "https://accounts.spotify.com/authorize" +
-            "?client_id=" + constants.client_id +
-            "&response_type=" + constants.response_type +
-            "&redirect_uri=" + constants.redirect_uri +
-            "&scope=" + constants.scopes
-
-        if (process.env.REACT_APP_PREVIEW_ID)
-            link += "&state=" + process.env.REACT_APP_PREVIEW_ID
-
-        window.location.href = link
+    const requestAuthorization = async () => {
+        window.location.href =
+            "https://accounts.spotify.com/authorize" +
+            "?client_id=" +
+            constants.client_id +
+            "&response_type=" +
+            constants.response_type +
+            "&redirect_uri=" +
+            constants.redirect_uri +
+            "&scope=" +
+            constants.scopes +
+            "&code_challenge_method=" +
+            constants.code_challenge_method +
+            "&code_challenge=" +
+            (await getCodeChallenge())
     }
 
     return (
