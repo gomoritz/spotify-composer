@@ -4,7 +4,7 @@ const constants = {
     redirect_uri:
         process.env.NODE_ENV === "development"
             ? "http://127.0.0.1:3000/authorization_callback"
-            : "https://composer.goessl.me/authorization_callback",
+            : "https://spotify-composer.vercel.app/authorization_callback",
     scopes: encodeURIComponent("playlist-read-private playlist-modify-public playlist-read-collaborative user-library-read"),
     code_challenge_method: "S256",
 }
