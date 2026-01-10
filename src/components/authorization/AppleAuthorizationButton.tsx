@@ -15,7 +15,7 @@ const AppleAuthorizationButton: React.FC = () => {
 
     return (
         <motion.div
-            className="flex items-center gap-3 bg-[#FA2D48] hover:bg-[#ff3b55] text-white py-3 px-8 rounded-full font-bold text-lg shadow-lg cursor-pointer transition-colors"
+            className="flex items-center gap-3 bg-[#ff0436] hover:bg-[#ff3b55] text-white py-3 px-8 rounded-full font-bold text-lg shadow-lg cursor-pointer transition-colors"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.98 }}
             onClick={requestAuthorization}
