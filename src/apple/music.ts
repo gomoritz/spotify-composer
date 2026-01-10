@@ -97,16 +97,67 @@ export async function getAppleMusicPlaylistTrackCount(playlistId: string): Promi
     return undefined
 }
 
-export async function getAppleMusicSongByISRC(isrc: string): Promise<GenericSong | null> {
+export async function getAppleMusicSongByISRC(isrc: string, albumName?: string): Promise<GenericSong | null> {
     const music = await initMusicKit()
     const storefront = music.storefrontId || "us"
-    const url = `https://api.music.apple.com/v1/catalog/${storefront}/songs?filter[isrc]=${isrc}`
+    // Fetch multiple to allow for album matching
+    const url = `https://api.music.apple.com/v1/catalog/${storefront}/songs?filter[isrc]=${isrc}&limit=25`
 
     const response = await fetchAppleMusic(url, music)
     if (response.ok) {
         const data = await response.json()
         if (data.data && data.data.length > 0) {
+            if (albumName) {
+                const lowerAlbum = albumName.toLowerCase()
+                // Find the best match
+                const bestMatch = data.data.find((s: any) => s.attributes?.albumName?.toLowerCase() === lowerAlbum)
+                if (bestMatch) return mapAppleMusicSong(bestMatch)
+
+                // Partial match fallback
+                const partialMatch = data.data.find(
+                    (s: any) =>
+                        s.attributes?.albumName?.toLowerCase().includes(lowerAlbum) ||
+                        lowerAlbum.includes(s.attributes?.albumName?.toLowerCase())
+                )
+                if (partialMatch) return mapAppleMusicSong(partialMatch)
+            }
+
             return mapAppleMusicSong(data.data[0])
+        }
+    }
+    return null
+}
+
+export async function searchAppleMusicByMetadata(name: string, artist: string, albumName?: string): Promise<GenericSong | null> {
+    const music = await initMusicKit()
+    const storefront = music.storefrontId || "us"
+
+    // We search with name and artist, and then try to match the album from the results
+    const term = encodeURIComponent(`${name} ${artist}`)
+    const url = `https://api.music.apple.com/v1/catalog/${storefront}/search?term=${term}&types=songs&limit=10`
+
+    const response = await fetchAppleMusic(url, music)
+    if (response.ok) {
+        const data = await response.json()
+        const songs = data.results?.songs?.data
+        if (songs && songs.length > 0) {
+            if (albumName) {
+                const lowerAlbum = albumName.toLowerCase()
+                // Find exact album match
+                const bestMatch = songs.find((s: any) => s.attributes?.albumName?.toLowerCase() === lowerAlbum)
+                if (bestMatch) return mapAppleMusicSong(bestMatch)
+
+                // Find partial album match
+                const partialMatch = songs.find(
+                    (s: any) =>
+                        s.attributes?.albumName?.toLowerCase().includes(lowerAlbum) ||
+                        lowerAlbum.includes(s.attributes?.albumName?.toLowerCase())
+                )
+                if (partialMatch) return mapAppleMusicSong(partialMatch)
+            }
+
+            // Return first result if no album match or no album provided
+            return mapAppleMusicSong(songs[0])
         }
     }
     return null

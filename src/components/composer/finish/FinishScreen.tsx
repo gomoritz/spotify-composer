@@ -5,11 +5,18 @@ import { Reorder } from "motion/react"
 import SongItem from "@/components/composer/finish/SongItem"
 import FinishButton from "@/components/composer/finish/FinishButton"
 import PlaylistCover from "@/components/composer/finish/PlaylistCover"
-import { addSongsToPlaylist, createPlaylist } from "@/spotify/playlists"
+import { addSongsToPlaylist, createPlaylist, searchSpotifyByISRC, searchSpotifyByMetadata } from "@/spotify/playlists"
 import { GenericSong } from "@/types/music"
 import { getAccessToken } from "@/spotify/authorization"
-import { addSongsToAppleMusicPlaylist, createAppleMusicPlaylist, isAppleMusicAuthorized } from "@/apple/music"
-import { FaSpotify, FaApple } from "react-icons/fa"
+import {
+    addSongsToAppleMusicPlaylist,
+    createAppleMusicPlaylist,
+    isAppleMusicAuthorized,
+    getAppleMusicSongByISRC,
+    searchAppleMusicByMetadata
+} from "@/apple/music"
+import { FaSpotify, FaApple, FaSearch, FaCheck, FaExclamationTriangle } from "react-icons/fa"
+import { motion, AnimatePresence } from "motion/react"
 
 interface Props {
     songs: GenericSong[]
@@ -19,6 +26,13 @@ const FinishScreen: React.FC<Props> = ({ songs }) => {
     const [working, setWorking] = useState(false)
     const [order, setOrder] = useState(songs)
     const [destination, setDestination] = useState<"spotify" | "apple-music">("spotify")
+    const [analysisResults, setAnalysisResults] = useState<{
+        matched: number
+        failed: GenericSong[]
+        matchingSongs: GenericSong[]
+    } | null>(null)
+    const [analyzingIds, setAnalyzingIds] = useState<Set<string>>(new Set())
+    const [matchedIds, setMatchedIds] = useState<Set<string>>(new Set())
 
     useEffect(() => {
         setOrder(songs)
@@ -27,7 +41,108 @@ const FinishScreen: React.FC<Props> = ({ songs }) => {
         }
     }, [songs])
 
+    // Reset analysis when destination or order changes
+    useEffect(() => {
+        setAnalysisResults(null)
+        setAnalyzingIds(new Set())
+        setMatchedIds(new Set())
+    }, [destination, order])
+
+    async function analyze() {
+        if (working) return
+        setWorking(true)
+        setAnalyzingIds(new Set())
+        setMatchedIds(new Set())
+
+        const matchingSongs: GenericSong[] = []
+        const failed: GenericSong[] = []
+        let matchedCount = 0
+
+        try {
+            for (const song of order) {
+                const songKey = song.id + song.provider.name
+                setAnalyzingIds(prev => new Set(prev).add(songKey))
+
+                if (song.provider.name === destination) {
+                    matchingSongs.push(song)
+                    matchedCount++
+                    setMatchedIds(prev => new Set(prev).add(songKey))
+                    setAnalyzingIds(prev => {
+                        const next = new Set(prev)
+                        next.delete(songKey)
+                        return next
+                    })
+                    continue
+                }
+
+                try {
+                    let found = false
+                    if (destination === "spotify") {
+                        let uri = song.isrc ? await searchSpotifyByISRC(song.isrc, song.album) : null
+
+                        // Fallback to metadata search
+                        if (!uri) {
+                            uri = await searchSpotifyByMetadata(song.name, song.artist, song.album)
+                        }
+
+                        if (uri) {
+                            matchingSongs.push({ ...song, uri, provider: { name: "spotify", id: "spotify" } })
+                            matchedCount++
+                            found = true
+                        } else {
+                            failed.push(song)
+                        }
+                    } else {
+                        let amSong = song.isrc ? await getAppleMusicSongByISRC(song.isrc, song.album) : null
+
+                        // Fallback to metadata search
+                        if (!amSong) {
+                            amSong = await searchAppleMusicByMetadata(song.name, song.artist, song.album)
+                        }
+
+                        if (amSong) {
+                            matchingSongs.push(amSong)
+                            matchedCount++
+                            found = true
+                        } else {
+                            failed.push(song)
+                        }
+                    }
+
+                    if (found) {
+                        setMatchedIds(prev => new Set(prev).add(songKey))
+                    }
+                } catch (e) {
+                    console.error("Match error for song", song.name, e)
+                    failed.push(song)
+                } finally {
+                    setAnalyzingIds(prev => {
+                        const next = new Set(prev)
+                        next.delete(songKey)
+                        return next
+                    })
+                }
+            }
+
+            setAnalysisResults({
+                matched: matchedCount,
+                failed,
+                matchingSongs
+            })
+        } catch (e) {
+            console.error("Analysis failed", e)
+            alert("Failed to analyze songs")
+        } finally {
+            setWorking(false)
+        }
+    }
+
     async function finish() {
+        if (!analysisResults) {
+            await analyze()
+            return
+        }
+
         if (working) return
         setWorking(true)
 
@@ -37,10 +152,10 @@ const FinishScreen: React.FC<Props> = ({ songs }) => {
         try {
             if (destination === "spotify") {
                 const playlist = await createPlaylist()
-                await addSongsToPlaylist(playlist.id, order)
+                await addSongsToPlaylist(playlist.id, analysisResults.matchingSongs)
             } else {
                 const playlistId = await createAppleMusicPlaylist(name, description)
-                await addSongsToAppleMusicPlaylist(playlistId, order)
+                await addSongsToAppleMusicPlaylist(playlistId, analysisResults.matchingSongs)
             }
             alert("Playlist created successfully!")
         } catch (e) {
@@ -116,17 +231,30 @@ const FinishScreen: React.FC<Props> = ({ songs }) => {
             <div className="mt-5">
                 <PlaylistCover songs={order} />
             </div>
+
             <Reorder.Group axis="y" values={order} onReorder={setOrder} className="w-full my-10">
-                {order.map((song: GenericSong) => (
-                    <Reorder.Item key={song.id + song.provider.name} value={song}>
-                        <SongItem song={song} />
-                    </Reorder.Item>
-                ))}
+                {order.map((song: GenericSong) => {
+                    const songKey = song.id + song.provider.name
+                    const isFailed = analysisResults?.failed.some(f => f.id === song.id && f.provider.name === song.provider.name)
+                    const isAnalyzing = analyzingIds.has(songKey)
+                    const isMatched = matchedIds.has(songKey)
+
+                    return (
+                        <Reorder.Item key={songKey} value={song}>
+                            <SongItem song={song} isFailed={isFailed} isAnalyzing={isAnalyzing} isMatched={isMatched} />
+                        </Reorder.Item>
+                    )
+                })}
             </Reorder.Group>
+
             <FinishButton
                 onClick={finish}
                 working={working}
-                text={destination === "spotify" ? "Save to Spotify" : "Save to Apple Music"}
+                text={
+                    !analysisResults
+                        ? `Analyze for ${destination === "spotify" ? "Spotify" : "Apple Music"}`
+                        : `Create ${destination === "spotify" ? "Spotify" : "Apple Music"} Playlist`
+                }
             />
         </div>
     )

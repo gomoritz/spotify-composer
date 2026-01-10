@@ -83,7 +83,7 @@ export function mapAppleMusicSong(s: any): GenericSong {
         artist: attributes.artistName,
         album: attributes.albumName,
         artworkUrl: attributes.artwork?.url?.replace("{w}", "300").replace("{h}", "300"),
-        isrc: attributes.isrc,
+        isrc: attributes.isrc || catalogData.isrc,
         previewUrl: attributes.previews?.[0]?.url || catalogData.previews?.[0]?.url,
         durationMs: attributes.durationInMillis,
         provider: { name: "apple-music", id: "apple-music" }

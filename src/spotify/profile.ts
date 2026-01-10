@@ -11,7 +11,7 @@ export async function getProfile(): Promise<Profile | null> {
 }
 
 export async function getSavedSongs(next?: string): Promise<Song[]> {
-    const response: SongCollection = await fetch(next ?? "https://api.spotify.com/v1/me/tracks?limit=50&market=from_token", {
+    const response: SongCollection = await fetch(next ?? "https://api.spotify.com/v1/me/tracks?limit=50&market=DE", {
         headers: authorizationHeaders()
     })
         .then(res => res.json())

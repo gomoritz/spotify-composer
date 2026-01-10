@@ -23,7 +23,7 @@ const SongAudioPreview: React.FC<Props> = ({ currentSong, targetVolume }) => {
         if (currentSong.previewUrl) {
             setEffectivePreviewUrl(currentSong.previewUrl)
         } else if (currentSong.isrc) {
-            getAppleMusicSongByISRC(currentSong.isrc).then(song => {
+            getAppleMusicSongByISRC(currentSong.isrc, currentSong.album).then(song => {
                 if (!interrupted) {
                     setEffectivePreviewUrl(song?.previewUrl)
                 }
