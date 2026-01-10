@@ -84,7 +84,7 @@ const SongAudioControls: React.FC<Props> = ({ volume, setVolume }) => {
                     >
                         <motion.div
                             key="circle"
-                            className="absolute -left-1 w-3 h-3.5 rounded-full bg-emerald-500 shadow-md"
+                            className="absolute -left-1 w-3 h-3.5 rounded-full bg-purple-600 shadow-md"
                             style={{ y }}
                             drag="y" dragConstraints={volumeControlRef} dragControls={dragControls} dragElastic={0}
                             onDrag={updateVolume} onDragEnd={updateVolume} onDragTransitionEnd={updateVolume}

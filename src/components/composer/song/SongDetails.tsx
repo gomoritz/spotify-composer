@@ -1,6 +1,7 @@
 import React, { useRef } from "react"
 import { motion, MotionValue, useTransform } from "motion/react"
 import { GenericSong } from "@/types/music"
+import { FaSpotify, FaApple } from "react-icons/fa"
 
 type Props = {
     currentSong: GenericSong
@@ -9,7 +10,7 @@ type Props = {
 }
 
 const SongDetails: React.FC<Props> = ({ currentSong, x, left }) => {
-    const background = useTransform(x, [-150, 0, 150], ["rgb(95,15,15)", "#000000", "rgb(9,55,22)"])
+    const background = useTransform(x, [-150, 0, 150], ["rgb(95,15,15)", "#000000", "rgb(55, 9, 95)"])
     const dragGradientRef = useRef<HTMLDivElement | null>(null)
 
     background.onChange(value => {
@@ -30,7 +31,14 @@ const SongDetails: React.FC<Props> = ({ currentSong, x, left }) => {
             >
                 <p className="text-white text-center tracking-tight mb-3">{left} songs left</p>
                 <h1 className="text-2xl text-white text-center font-bold tracking-tight">{currentSong.name}</h1>
-                <p className="text-xl text-white text-center opacity-70 tracking-tight">{currentSong.artist}</p>
+                <div className="flex items-center justify-center gap-2 opacity-70">
+                    {currentSong.provider.name === "spotify" ? (
+                        <FaSpotify className="text-[#1DB954] text-lg" title="Spotify" />
+                    ) : (
+                        <FaApple className="text-[#FA2D48] text-lg" title="Apple Music" />
+                    )}
+                    <p className="text-xl text-white text-center tracking-tight">{currentSong.artist}</p>
+                </div>
             </div>
         </motion.div>
     )

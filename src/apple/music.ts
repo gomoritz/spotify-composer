@@ -25,7 +25,7 @@ export async function initMusicKit() {
     return MusicKit.configure({
         developerToken,
         app: {
-            name: "Spotify Composer",
+            name: "Music Composer",
             build: "1.0.0"
         }
     })
@@ -97,18 +97,38 @@ export async function getAppleMusicPlaylistTrackCount(playlistId: string): Promi
     return undefined
 }
 
+export async function getAppleMusicSongByISRC(isrc: string): Promise<GenericSong | null> {
+    const music = await initMusicKit()
+    const storefront = music.storefrontId || "us"
+    const url = `https://api.music.apple.com/v1/catalog/${storefront}/songs?filter[isrc]=${isrc}`
+
+    const response = await fetchAppleMusic(url, music)
+    if (response.ok) {
+        const data = await response.json()
+        if (data.data && data.data.length > 0) {
+            return mapAppleMusicSong(data.data[0])
+        }
+    }
+    return null
+}
+
 /**
  * A wrapper around fetch that adds Apple Music headers and handles rate limiting.
  */
 async function fetchAppleMusic(url: string, music: any, options: RequestInit = {}): Promise<Response> {
+    const headers: Record<string, string> = {
+        Authorization: `Bearer ${music.developerToken}`,
+        ...((options.headers as any) || {})
+    }
+
+    if (music.musicUserToken) {
+        headers["Music-User-Token"] = music.musicUserToken
+    }
+
     const makeRequest = () =>
         fetch(url, {
             ...options,
-            headers: {
-                Authorization: `Bearer ${music.developerToken}`,
-                "Music-User-Token": music.musicUserToken,
-                ...options.headers
-            }
+            headers
         })
 
     let response = await makeRequest()

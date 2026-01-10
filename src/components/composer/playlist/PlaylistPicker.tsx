@@ -117,8 +117,8 @@ const PlaylistPicker: React.FC<Props> = ({ setIncludedPlaylists }) => {
                         ))}
                     </div>
                     <motion.div
-                        className="sticky bottom-6 left-0 mx-auto w-64 h-12 text-center px-5 py-2 bg-emerald-500 text-white text-lg
-                            shadow-lg rounded-lg cursor-pointer border-2 border-emerald-400 overflow-hidden
+                        className="sticky bottom-6 left-0 mx-auto w-64 h-12 text-center px-5 py-2 bg-purple-600 text-white text-lg
+                            shadow-lg rounded-lg cursor-pointer border-2 border-purple-500 overflow-hidden
                             flex justify-center items-center"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}

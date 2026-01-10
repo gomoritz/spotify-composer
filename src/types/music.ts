@@ -43,7 +43,7 @@ export function mapSpotifySong(s: SpotifySong): GenericSong {
         id: s.track.id,
         name: s.track.name,
         artist: s.track.artists[0]?.name || "Unknown Artist",
-        album: s.track.album.id,
+        album: s.track.album.name,
         artworkUrl:
             s.track.album.images && s.track.album.images.length > 0 ? s.track.album.images[0]?.url || undefined : undefined,
         isrc: s.track.external_ids.isrc,

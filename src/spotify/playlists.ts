@@ -18,7 +18,7 @@ export async function getPlaylists(next?: string): Promise<Playlist[]> {
 }
 
 export async function getPlaylistTracks(id: string, next?: string): Promise<Song[]> {
-    const response: SongCollection = await fetch(next ?? `https://api.spotify.com/v1/playlists/${id}/tracks`, {
+    const response: SongCollection = await fetch(next ?? `https://api.spotify.com/v1/playlists/${id}/tracks?market=from_token`, {
         headers: authorizationHeaders()
     })
         .then(res => res.json())
@@ -95,7 +95,7 @@ export async function createPlaylist(): Promise<Playlist> {
         body: JSON.stringify({
             name: `${getRandomEmoji()} ${profile.display_name}'s Composed Playlist`,
             description:
-                "🔥 Generated with the Spotify Composer by incxption. 👉 Create your own one at spotify-composer.vercel.app!"
+                "🔥 Generated with the Music Composer by incxption. 👉 Create your own one at spotify-composer.vercel.app!"
         })
     })
         .then(res => res.json())

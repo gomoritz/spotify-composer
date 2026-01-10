@@ -1,6 +1,7 @@
 import React from "react"
 import Image from "next/image"
 import { GenericSong } from "@/types/music"
+import { FaSpotify, FaApple } from "react-icons/fa"
 
 interface Props {
     song: GenericSong
@@ -29,7 +30,14 @@ const SongItem: React.FC<Props> = ({ song }) => {
                 <h1 className="text-md font-medium tracking-tight truncate">{song.name}</h1>
                 <p className="text-sm leading-4 font-light tracking-tight truncate">{song.artist}</p>
             </div>
-            <p className="h-full flex flex-col justify-center text-right pr-3 tracking-tight">{duration}</p>
+            <div className="h-full flex items-center pr-3 gap-3">
+                {song.provider.name === "spotify" ? (
+                    <FaSpotify className="text-[#1DB954] text-sm" title="Spotify" />
+                ) : (
+                    <FaApple className="text-[#FA2D48] text-sm" title="Apple Music" />
+                )}
+                <p className="text-right tracking-tight">{duration}</p>
+            </div>
         </div>
     )
 }

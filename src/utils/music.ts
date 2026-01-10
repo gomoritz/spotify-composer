@@ -25,7 +25,7 @@ export async function collectSongs(
         if (playlist.provider.name === "spotify") {
             const spotifySongs =
                 playlist.id === "library-pseudo" ? await getSpotifySavedSongs() : await getSpotifyPlaylistTracks(playlist.id)
-            songs = spotifySongs.map(mapSpotifySong)
+            songs = spotifySongs.filter(s => s.track && !s.is_local && !s.track.is_local).map(mapSpotifySong)
         } else if (playlist.provider.name === "apple-music") {
             songs = await getAppleMusicPlaylistTracks(playlist.id)
         }

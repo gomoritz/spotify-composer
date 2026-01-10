@@ -11,7 +11,7 @@ type Props = {
 
 const DialogButton: React.FC<Props> = ({ onClick, primary, dangerous, className, children }) => {
     const classes = `w-44 py-1 text-center rounded-md shadow-sm font-medium tracking-tight cursor-pointer 
-        ${primary ? "bg-emerald-300 text-emerald-800" :
+        ${primary ? "bg-purple-300 text-purple-900" :
             dangerous ? "bg-rose-200 text-rose-700" :
                 "bg-neutral-200 text-neutral-700"} ${className}`
 

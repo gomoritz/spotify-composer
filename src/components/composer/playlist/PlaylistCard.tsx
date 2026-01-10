@@ -2,6 +2,7 @@ import { motion, useMotionValue, useTransform } from "motion/react"
 import React, { useEffect, useRef, useState } from "react"
 import { GenericPlaylist } from "@/types/music"
 import { getAppleMusicPlaylistTrackCount } from "@/apple/music"
+import { FaSpotify, FaApple } from "react-icons/fa"
 
 interface Props {
     playlist: GenericPlaylist
@@ -66,7 +67,7 @@ const PlaylistCard: React.FC<Props> = ({ playlist, isSelected, togglePlaylist, o
             className={
                 "bg-white shadow-md rounded-xl flex flex-col group " +
                 "justify-between cursor-pointer transition-all overflow-hidden " +
-                (isSelected && "ring-4 ring-emerald-500")
+                (isSelected && "ring-4 ring-purple-600")
             }
             variants={cardVariants}
             animate={isSelected ? "selected" : "unselected"}
@@ -89,7 +90,7 @@ const PlaylistCard: React.FC<Props> = ({ playlist, isSelected, togglePlaylist, o
                         d="M38 74.707l24.647 24.646L116.5 45.5"
                         fill="transparent"
                         strokeWidth="25"
-                        stroke="#10B981"
+                        stroke="#9333ea"
                         strokeLinecap="round"
                         variants={checkVariants}
                         transition={{ type: "spring", stiffness: 300, damping: 20, delay: 0.1 }}
@@ -111,9 +112,16 @@ const PlaylistCard: React.FC<Props> = ({ playlist, isSelected, togglePlaylist, o
                     }
                 />
             </div>
-            <div className="w-full flex flex-row justify-between text-md tracking-tight px-3 py-2 flex-grow">
-                <p className="font-semibold truncate whitespace-nowrap pr-2">{playlist.name}</p>
-                <p className="text-neutral-600 flex-nowrap whitespace-nowrap">
+            <div className="w-full flex flex-row items-center justify-between text-md tracking-tight px-3 py-2 flex-grow">
+                <div className="flex items-center gap-2 truncate pr-2">
+                    {playlist.provider.name === "spotify" ? (
+                        <FaSpotify className="text-green-500 flex-shrink-0" title="Spotify" />
+                    ) : (
+                        <FaApple className="text-red-500 flex-shrink-0" title="Apple Music" />
+                    )}
+                    <p className="font-semibold truncate whitespace-nowrap">{playlist.name}</p>
+                </div>
+                <p className="text-neutral-600 flex-nowrap whitespace-nowrap flex-shrink-0">
                     {playlist.trackCount !== undefined ? `${playlist.trackCount} songs` : "..."}
                 </p>
             </div>

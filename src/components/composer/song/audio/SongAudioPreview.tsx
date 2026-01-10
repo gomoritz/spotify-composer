@@ -6,6 +6,7 @@ import React, { useEffect, useRef, useState } from "react"
 import { GenericSong } from "@/types/music"
 import interpolate, { Interpolation } from "@/utils/interpolate"
 import { motion } from "motion/react"
+import { getAppleMusicSongByISRC } from "@/apple/music"
 
 type Props = {
     currentSong: GenericSong
@@ -15,6 +16,25 @@ type Props = {
 const SongAudioPreview: React.FC<Props> = ({ currentSong, targetVolume }) => {
     const audioRef = useRef<HTMLAudioElement | null>(null)
     const [progress, setProgress] = useState(0)
+    const [effectivePreviewUrl, setEffectivePreviewUrl] = useState<string | undefined>(currentSong.previewUrl)
+
+    useEffect(() => {
+        let interrupted = false
+        if (currentSong.previewUrl) {
+            setEffectivePreviewUrl(currentSong.previewUrl)
+        } else if (currentSong.isrc) {
+            getAppleMusicSongByISRC(currentSong.isrc).then(song => {
+                if (!interrupted) {
+                    setEffectivePreviewUrl(song?.previewUrl)
+                }
+            })
+        } else {
+            setEffectivePreviewUrl(undefined)
+        }
+        return () => {
+            interrupted = true
+        }
+    }, [currentSong])
 
     const fadeInRef = useRef<Interpolation>(
         interpolate({
@@ -46,16 +66,22 @@ const SongAudioPreview: React.FC<Props> = ({ currentSong, targetVolume }) => {
 
     useEffect(() => {
         setProgress(0)
-        const previewUrl = currentSong.previewUrl
-        if (!previewUrl) return
+        if (!effectivePreviewUrl) {
+            audioRef.current = null
+            return
+        }
 
-        const audio: HTMLAudioElement = new Audio(previewUrl)
+        const audio: HTMLAudioElement = new Audio(effectivePreviewUrl)
         audioRef.current = audio
 
         let looping = false
         const listener = async () => {
-            setProgress((audio.currentTime / audio.duration) * 100)
-            if (audio.currentTime > audio.duration - 1.3 && !looping) {
+            const d = audio.duration
+            if (!isNaN(d) && d > 0) {
+                setProgress((audio.currentTime / d) * 100)
+            }
+
+            if (!isNaN(d) && d > 0 && audio.currentTime > d - 1.3 && !looping) {
                 looping = true
                 await fadeOutRef.current.start()
                 audio.pause()
@@ -68,18 +94,18 @@ const SongAudioPreview: React.FC<Props> = ({ currentSong, targetVolume }) => {
         }
         audio.addEventListener("timeupdate", listener)
 
-        let interruped = false
+        let interrupted = false
 
         // start playback after 500ms
         setTimeout(async () => {
-            if (interruped) return
+            if (interrupted) return
             try {
                 audio.volume = 0.0
                 await audio.play()
             } catch (e) {
                 audioRef.current = null
                 setProgress(-1)
-                interruped = true
+                interrupted = true
                 return
             }
 
@@ -90,12 +116,16 @@ const SongAudioPreview: React.FC<Props> = ({ currentSong, targetVolume }) => {
         return () => {
             audio.removeEventListener("timeupdate", listener)
 
-            if (interruped) return
-            interruped = true
+            if (interrupted) return
+            interrupted = true
             fadeInRef.current.interrupt()
-            fadeOutRef.current.start().then(() => audio.pause())
+            fadeOutRef.current.start().then(() => {
+                audio.pause()
+                audio.src = ""
+                audio.load()
+            })
         }
-    }, [currentSong])
+    }, [effectivePreviewUrl])
 
     useEffect(() => {
         const audio = audioRef.current
@@ -104,14 +134,14 @@ const SongAudioPreview: React.FC<Props> = ({ currentSong, targetVolume }) => {
             fadeInRef.current.to = targetVolume
             fadeOutRef.current.from = targetVolume
         }
-    }, [targetVolume, currentSong])
+    }, [targetVolume, effectivePreviewUrl])
 
     return (
         audioRef.current && (
             <>
-                <div className="absolute bottom-0 left-0 w-full z-30 h-1.5 bg-emerald-700" />
+                <div className="absolute bottom-0 left-0 w-full z-30 h-1.5 bg-purple-800" />
                 <motion.div
-                    className="absolute bottom-0 left-0 z-30 h-1.5 bg-emerald-500"
+                    className="absolute bottom-0 left-0 z-30 h-1.5 bg-purple-600"
                     animate={{ width: `${progress}%` }}
                     transition={{ ease: "linear", duration: progress === 0 ? 0 : 1 }}
                 />

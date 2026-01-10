@@ -9,6 +9,7 @@ import { addSongsToPlaylist, createPlaylist } from "@/spotify/playlists"
 import { GenericSong } from "@/types/music"
 import { getAccessToken } from "@/spotify/authorization"
 import { addSongsToAppleMusicPlaylist, createAppleMusicPlaylist, isAppleMusicAuthorized } from "@/apple/music"
+import { FaSpotify, FaApple } from "react-icons/fa"
 
 interface Props {
     songs: GenericSong[]
@@ -31,7 +32,7 @@ const FinishScreen: React.FC<Props> = ({ songs }) => {
         setWorking(true)
 
         const name = "🪄 My Composed Playlist"
-        const description = "Generated with Spotify Composer"
+        const description = "Generated with Music Composer"
 
         try {
             if (destination === "spotify") {
@@ -65,24 +66,50 @@ const FinishScreen: React.FC<Props> = ({ songs }) => {
                 you selected. You can create the playlist by clicking the button below.
             </p>
 
-            {canSpotify && canApple && (
-                <div className="mt-5 flex gap-4">
-                    <button
-                        onClick={() => setDestination("spotify")}
-                        className={`px-4 py-2 rounded-md ${
-                            destination === "spotify" ? "bg-emerald-500 text-white" : "bg-gray-200"
-                        }`}
-                    >
-                        Save to Spotify
-                    </button>
-                    <button
-                        onClick={() => setDestination("apple-music")}
-                        className={`px-4 py-2 rounded-md ${
-                            destination === "apple-music" ? "bg-red-500 text-white" : "bg-gray-200"
-                        }`}
-                    >
-                        Save to Apple Music
-                    </button>
+            {canSpotify && canApple ? (
+                <div className="mt-8 flex flex-col items-center">
+                    <p className="text-sm font-medium uppercase tracking-wider opacity-60 mb-3">Choose Destination Service</p>
+                    <div className="flex gap-4">
+                        <button
+                            onClick={() => setDestination("spotify")}
+                            className={`px-6 py-2.5 rounded-full flex items-center gap-2 transition-all ${
+                                destination === "spotify"
+                                    ? "bg-[#1DB954] text-white shadow-md scale-105"
+                                    : "bg-white text-gray-600 border border-gray-200 hover:border-gray-300"
+                            }`}
+                        >
+                            <FaSpotify className={destination === "spotify" ? "text-white" : "text-[#1DB954]"} />
+                            <span className="font-semibold">Spotify</span>
+                        </button>
+                        <button
+                            onClick={() => setDestination("apple-music")}
+                            className={`px-6 py-2.5 rounded-full flex items-center gap-2 transition-all ${
+                                destination === "apple-music"
+                                    ? "bg-[#FA2D48] text-white shadow-md scale-105"
+                                    : "bg-white text-gray-600 border border-gray-200 hover:border-gray-300"
+                            }`}
+                        >
+                            <FaApple className={destination === "apple-music" ? "text-white" : "text-[#FA2D48]"} />
+                            <span className="font-semibold">Apple Music</span>
+                        </button>
+                    </div>
+                </div>
+            ) : (
+                <div className="mt-8 flex flex-col items-center">
+                    <p className="text-sm font-medium uppercase tracking-wider opacity-60 mb-3">Destination Service</p>
+                    <div className="px-6 py-2.5 rounded-full flex items-center gap-2 bg-white text-gray-600 border border-gray-200">
+                        {canSpotify ? (
+                            <>
+                                <FaSpotify className="text-[#1DB954]" />
+                                <span className="font-semibold text-neutral-800">Spotify</span>
+                            </>
+                        ) : (
+                            <>
+                                <FaApple className="text-[#FA2D48]" />
+                                <span className="font-semibold text-neutral-800">Apple Music</span>
+                            </>
+                        )}
+                    </div>
                 </div>
             )}
 

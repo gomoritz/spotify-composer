@@ -5,15 +5,14 @@ export async function getProfile(): Promise<Profile | null> {
     const accessToken = getAccessToken()
     if (!accessToken) return null
 
-    return await fetch(
-        "https://api.spotify.com/v1/me",
-        { headers: authorizationHeaders() }
-    ).then(res => res.json()).catch(console.error)
+    return await fetch("https://api.spotify.com/v1/me", { headers: authorizationHeaders() })
+        .then(res => res.json())
+        .catch(console.error)
 }
 
 export async function getSavedSongs(next?: string): Promise<Song[]> {
-    const response: SongCollection = await fetch(next ?? "https://api.spotify.com/v1/me/tracks?limit=50", {
-        headers: authorizationHeaders(),
+    const response: SongCollection = await fetch(next ?? "https://api.spotify.com/v1/me/tracks?limit=50&market=from_token", {
+        headers: authorizationHeaders()
     })
         .then(res => res.json())
         .catch(console.error)
