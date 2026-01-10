@@ -7,51 +7,68 @@ import PlaylistCard from "./PlaylistCard"
 import useAsync from "@/utils/useAsync"
 import { getProfile } from "@/spotify/profile"
 import { buildPseudoPlaylistFromLibrary, getPlaylists } from "@/spotify/playlists"
-import { Playlist } from "@/types/spotify"
+import { GenericPlaylist, mapSpotifyPlaylist } from "@/types/music"
+import { getAppleMusicPlaylists, isAppleMusicAuthorized } from "@/apple/music"
+import { getAccessToken } from "@/spotify/authorization"
 import LoadingScreen from "@/components/composer/LoadingScreen"
 
 interface Props {
-    setIncludedPlaylists: (playlists: Playlist[]) => void
+    setIncludedPlaylists: (playlists: GenericPlaylist[]) => void
 }
 
 const FilterOptions = ["all", "owned", "liked"]
 export type Filter = "all" | "owned" | "liked"
 
 const PlaylistPicker: React.FC<Props> = ({ setIncludedPlaylists }) => {
-    const [playlists, setPlaylists] = useState<Playlist[]>([])
-    const { result: profile } = useAsync(getProfile)
-    const [filteredPlaylists, setFilteredPlaylists] = useState<Playlist[]>([])
-    const [selectedPlaylists, setSelectedPlaylists] = useState<Playlist[]>([])
+    const [playlists, setPlaylists] = useState<GenericPlaylist[]>([])
+    const [selectedPlaylists, setSelectedPlaylists] = useState<GenericPlaylist[]>([])
     const [filter, setFilter] = useState<Filter>("all")
-    const [loading, setLoading] = useState<boolean | null>(null)
+    const [loading, setLoading] = useState<boolean>(true)
+
+    const filteredPlaylists = playlists.filter(p => {
+        if (filter === "owned")
+            return p.provider.name === "apple-music" || p.id === "library-pseudo" || (p.provider.name === "spotify" && true) // Simplified for now as profile check is Spotify specific
+        return true
+    })
 
     useEffect(() => {
-        setTimeout(() => setLoading(true), 2_000)
-        setTimeout(() => setLoading(false), 4_000)
+        const fetchAllPlaylists = async () => {
+            const allPlaylists: GenericPlaylist[] = []
+
+            try {
+                if (getAccessToken()) {
+                    try {
+                        const spotifyPlaylists = await getPlaylists()
+                        allPlaylists.push(mapSpotifyPlaylist(await buildPseudoPlaylistFromLibrary()))
+                        allPlaylists.push(...spotifyPlaylists.map(mapSpotifyPlaylist))
+                    } catch (e) {
+                        console.error("Error fetching Spotify playlists", e)
+                    }
+                }
+
+                if (isAppleMusicAuthorized()) {
+                    try {
+                        const applePlaylists = await getAppleMusicPlaylists()
+                        allPlaylists.push(...applePlaylists)
+                    } catch (e) {
+                        console.error("Error fetching Apple Music playlists", e)
+                    }
+                }
+
+                setPlaylists(allPlaylists)
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        fetchAllPlaylists()
     }, [])
 
-    useEffect(() => {
-        getPlaylists()
-            .then(async fetched => {
-                setPlaylists([await buildPseudoPlaylistFromLibrary(), ...fetched])
-                console.log("Fetched playlists...")
-            })
-            .catch(console.error)
-    }, [])
-
-    useEffect(() => {
-        setFilteredPlaylists(() => {
-            if (filter === "owned") return playlists.filter(p => p.owner.id === profile?.id)
-            else if (filter === "liked") return playlists.filter(p => p.owner.id !== profile?.id)
-            return playlists
-        })
-    }, [filter, playlists, profile?.id])
-
-    const togglePlaylist = (playlist: Playlist) => {
+    const togglePlaylist = (playlist: GenericPlaylist) => {
         setSelectedPlaylists(prevState => {
             const newState = [...prevState]
-            if (newState.includes(playlist)) {
-                newState.splice(newState.indexOf(playlist), 1)
+            if (newState.find(p => p.id === playlist.id && p.provider.name === playlist.provider.name)) {
+                return newState.filter(p => !(p.id === playlist.id && p.provider.name === playlist.provider.name))
             } else {
                 newState.push(playlist)
             }
@@ -67,42 +84,40 @@ const PlaylistPicker: React.FC<Props> = ({ setIncludedPlaylists }) => {
 
     return (
         <AnimatePresence>
-            {
-                loading === null ?
-                    <></> :
-                    playlists && playlists.length > 0 && filteredPlaylists && profile && !loading ?
-                        <motion.div
-                            key="playlist-picker"
-                            animate={{ y: 0, opacity: 1 }} initial={{ y: "100%", opacity: 0 }}
-                            transition={{ duration: .7, ease: "easeInOut", bounce: .5 }}
-                        >
-                            <div className="max-w-screen-lg w-full px-10 mx-auto">
-                                <FilterDropdown current={filter} setFilter={setFilter} options={FilterOptions}/>
-                            </div>
-                            <div className="max-w-screen-lg w-full mx-auto mb-7 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 px-8 py-7">
-                                {filteredPlaylists.map(playlist => (
-                                    <PlaylistCard
-                                        key={playlist.id}
-                            isSelected={!!selectedPlaylists.find(it => it.id === playlist.id)}
-                                        playlist={playlist}
-                                        togglePlaylist={togglePlaylist}
-                                    />
-                                ))}
-                            </div>
-                            <motion.div
-                                className="sticky bottom-6 left-0 mx-auto w-64 h-12 text-center px-5 py-2 bg-emerald-500 text-white text-lg
+            {!loading ? (
+                <motion.div
+                    key="playlist-picker"
+                    animate={{ y: 0, opacity: 1 }}
+                    initial={{ y: "100%", opacity: 0 }}
+                    transition={{ duration: 0.7, ease: "easeInOut", bounce: 0.5 }}
+                >
+                    <div className="max-w-screen-lg w-full px-10 mx-auto">
+                        <FilterDropdown current={filter} setFilter={setFilter} options={FilterOptions} />
+                    </div>
+                    <div className="max-w-screen-lg w-full mx-auto mb-7 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 px-8 py-7">
+                        {filteredPlaylists.map(playlist => (
+                            <PlaylistCard
+                                key={playlist.id}
+                                isSelected={!!selectedPlaylists.find(it => it.id === playlist.id)}
+                                playlist={playlist}
+                                togglePlaylist={togglePlaylist}
+                            />
+                        ))}
+                    </div>
+                    <motion.div
+                        className="sticky bottom-6 left-0 mx-auto w-64 h-12 text-center px-5 py-2 bg-emerald-500 text-white text-lg
                             shadow-lg rounded-lg cursor-pointer border-2 border-emerald-400 overflow-hidden
                             flex justify-center items-center"
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                                onClick={finishSelection}
-                            >
-                                Finish playlist selection
-                            </motion.div>
-                        </motion.div>
-                        :
-                        <LoadingScreen title="Connecting to Spotify" message="Downloading library"/>
-            }
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={finishSelection}
+                    >
+                        Finish playlist selection
+                    </motion.div>
+                </motion.div>
+            ) : (
+                <LoadingScreen title="Connecting to Music Services" message="Downloading library" />
+            )}
         </AnimatePresence>
     )
 }

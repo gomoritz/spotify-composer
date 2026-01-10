@@ -3,12 +3,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 // ^ these checks are disabled because the changing of refs before an effect is cleared is intended
 import React, { useEffect, useRef, useState } from "react"
-import { Song } from "@/types/spotify"
+import { GenericSong } from "@/types/music"
 import interpolate, { Interpolation } from "@/utils/interpolate"
 import { motion } from "motion/react"
 
 type Props = {
-    currentSong: Song
+    currentSong: GenericSong
     targetVolume: number
 }
 
@@ -16,25 +16,29 @@ const SongAudioPreview: React.FC<Props> = ({ currentSong, targetVolume }) => {
     const audioRef = useRef<HTMLAudioElement | null>(null)
     const [progress, setProgress] = useState(0)
 
-    const fadeInRef = useRef<Interpolation>(interpolate({
-        from: 0,
-        to: targetVolume,
-        steps: 10,
-        duration: 100,
-        action: (volume) => audioRef.current!.volume = coerceVolume(volume)
-    }))
+    const fadeInRef = useRef<Interpolation>(
+        interpolate({
+            from: 0,
+            to: targetVolume,
+            steps: 10,
+            duration: 100,
+            action: volume => (audioRef.current!.volume = coerceVolume(volume))
+        })
+    )
 
-    const fadeOutRef = useRef<Interpolation>(interpolate({
-        from: targetVolume,
-        to: 0,
-        steps: 10,
-        duration: 100,
-        action: (volume) => audioRef.current!.volume = coerceVolume(volume)
-    }))
+    const fadeOutRef = useRef<Interpolation>(
+        interpolate({
+            from: targetVolume,
+            to: 0,
+            steps: 10,
+            duration: 100,
+            action: volume => (audioRef.current!.volume = coerceVolume(volume))
+        })
+    )
 
     useEffect(() => {
         setProgress(0)
-        const previewUrl = currentSong.track.preview_url
+        const previewUrl = currentSong.previewUrl
         if (!previewUrl) return
 
         const audio: HTMLAudioElement = new Audio(previewUrl)
@@ -94,15 +98,17 @@ const SongAudioPreview: React.FC<Props> = ({ currentSong, targetVolume }) => {
         }
     }, [targetVolume, currentSong])
 
-    return audioRef.current && (
-        <>
-            <div className="absolute bottom-0 left-0 w-full z-30 h-1.5 bg-emerald-700"/>
-            <motion.div
-                className="absolute bottom-0 left-0 z-30 h-1.5 bg-emerald-500"
-                animate={{ width: `${progress}%` }}
-                transition={{ ease: "linear", duration: progress === 0 ? 0 : 1 }}
-            />
-        </>
+    return (
+        audioRef.current && (
+            <>
+                <div className="absolute bottom-0 left-0 w-full z-30 h-1.5 bg-emerald-700" />
+                <motion.div
+                    className="absolute bottom-0 left-0 z-30 h-1.5 bg-emerald-500"
+                    animate={{ width: `${progress}%` }}
+                    transition={{ ease: "linear", duration: progress === 0 ? 0 : 1 }}
+                />
+            </>
+        )
     )
 }
 

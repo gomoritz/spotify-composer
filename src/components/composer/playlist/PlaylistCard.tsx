@@ -1,11 +1,11 @@
 import { motion, useMotionValue, useTransform } from "motion/react"
 import React from "react"
-import { Playlist } from "@/types/spotify"
+import { GenericPlaylist } from "@/types/music"
 
 interface Props {
-    playlist: Playlist
+    playlist: GenericPlaylist
     isSelected: boolean
-    togglePlaylist: (playlist: Playlist) => void
+    togglePlaylist: (playlist: GenericPlaylist) => void
 }
 
 const PlaylistCard: React.FC<Props> = ({ playlist, isSelected, togglePlaylist }) => {
@@ -29,9 +29,11 @@ const PlaylistCard: React.FC<Props> = ({ playlist, isSelected, togglePlaylist })
 
     return (
         <motion.div
-            className={"bg-white shadow-md rounded-xl flex flex-col group " +
-            "justify-between cursor-pointer transition-all overflow-hidden " +
-            (isSelected && "ring-4 ring-emerald-500")}
+            className={
+                "bg-white shadow-md rounded-xl flex flex-col group " +
+                "justify-between cursor-pointer transition-all overflow-hidden " +
+                (isSelected && "ring-4 ring-emerald-500")
+            }
             variants={cardVariants}
             animate={isSelected ? "selected" : "unselected"}
             initial="unselected"
@@ -47,7 +49,7 @@ const PlaylistCard: React.FC<Props> = ({ playlist, isSelected, togglePlaylist })
                     xmlns="http://www.w3.org/2000/svg"
                     width="150"
                     height="150"
-                    style={{filter: "drop-shadow(0px 0px 5px rgba(0, 0, 0, .6))"}}
+                    style={{ filter: "drop-shadow(0px 0px 5px rgba(0, 0, 0, .6))" }}
                 >
                     <motion.path
                         d="M38 74.707l24.647 24.646L116.5 45.5"
@@ -64,18 +66,20 @@ const PlaylistCard: React.FC<Props> = ({ playlist, isSelected, togglePlaylist })
 
             <div className="rounded-t-xl w-full h-44 shadow-sm transition-all overflow-hidden">
                 <div
-                    style={{ backgroundImage: playlist.images[0] ? `url('${playlist.images[0].url}` : "linear-gradient(#4B5563, #1F2937)" }}
-                    className={"w-full h-full bg-cover bg-center transition-all transform scale-110 group-hover:scale-100 " +
-                    (isSelected && "scale-100")}
+                    style={{
+                        backgroundImage: playlist.artworkUrl
+                            ? `url('${playlist.artworkUrl}')`
+                            : "linear-gradient(#4B5563, #1F2937)"
+                    }}
+                    className={
+                        "w-full h-full bg-cover bg-center transition-all transform scale-110 group-hover:scale-100 " +
+                        (isSelected && "scale-100")
+                    }
                 />
             </div>
             <div className="w-full flex flex-row justify-between text-md tracking-tight px-3 py-2 flex-grow">
-                <p className="font-semibold truncate whitespace-nowrap pr-2">
-                    {playlist.name}
-                </p>
-                <p className="text-neutral-600 flex-nowrap whitespace-nowrap">
-                    {playlist.tracks.total} songs
-                </p>
+                <p className="font-semibold truncate whitespace-nowrap pr-2">{playlist.name}</p>
+                <p className="text-neutral-600 flex-nowrap whitespace-nowrap">{playlist.trackCount} songs</p>
             </div>
         </motion.div>
     )

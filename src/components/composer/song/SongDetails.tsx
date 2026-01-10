@@ -1,9 +1,9 @@
 import React, { useRef } from "react"
 import { motion, MotionValue, useTransform } from "motion/react"
-import { Song } from "@/types/spotify"
+import { GenericSong } from "@/types/music"
 
 type Props = {
-    currentSong: Song
+    currentSong: GenericSong
     x: MotionValue<number>
     left: number
 }
@@ -18,13 +18,6 @@ const SongDetails: React.FC<Props> = ({ currentSong, x, left }) => {
         }
     })
 
-    const artists = currentSong.track.artists
-    const artistsText =
-        artists
-            .slice(0, 4)
-            .map(it => it.name)
-            .join(", ") + (artists.length > 4 ? ` and ${artists.length - 4} more` : "")
-
     return (
         <motion.div
             className="absolute top-0 left-0 w-full h-full flex flex-col justify-end items-center z-10"
@@ -36,8 +29,8 @@ const SongDetails: React.FC<Props> = ({ currentSong, x, left }) => {
                 max-h-32 overflow-hidden"
             >
                 <p className="text-white text-center tracking-tight mb-3">{left} songs left</p>
-                <h1 className="text-2xl text-white text-center font-bold tracking-tight">{currentSong.track.name}</h1>
-                <p className="text-xl text-white text-center opacity-70 tracking-tight">{artistsText}</p>
+                <h1 className="text-2xl text-white text-center font-bold tracking-tight">{currentSong.name}</h1>
+                <p className="text-xl text-white text-center opacity-70 tracking-tight">{currentSong.artist}</p>
             </div>
         </motion.div>
     )

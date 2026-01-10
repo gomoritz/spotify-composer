@@ -6,8 +6,8 @@ import SongDragOverlay from "@/components/composer/song/SongDragOverlay"
 import SongDetails from "@/components/composer/song/SongDetails"
 import SongBackground from "@/components/composer/song/SongBackground"
 import useAsync from "@/utils/useAsync"
-import { Playlist, Song } from "@/types/spotify"
-import { collectSongs, SongLoadingState } from "@/spotify/playlists"
+import { GenericPlaylist, GenericSong } from "@/types/music"
+import { collectSongs, SongLoadingState } from "@/utils/music"
 import SongAudioPreview from "@/components/composer/song/audio/SongAudioPreview"
 import SongAudioControls from "@/components/composer/song/audio/SongAudioControls"
 import LoadingScreen from "@/components/composer/LoadingScreen"
@@ -17,8 +17,8 @@ import SongOptionsButton from "@/components/composer/song/manipulation/SongOptio
 import SongOptionsDialog from "@/components/composer/song/manipulation/SongOptionsDialog"
 
 interface Props {
-    includedPlaylists: Playlist[]
-    setIncludedSongs: (songs: Song[]) => void
+    includedPlaylists: GenericPlaylist[]
+    setIncludedSongs: (songs: GenericSong[]) => void
 }
 
 const SongPicker: React.FC<Props> = ({ includedPlaylists, setIncludedSongs }) => {
@@ -129,7 +129,11 @@ const SongPicker: React.FC<Props> = ({ includedPlaylists, setIncludedSongs }) =>
                             setIndex={setIndex}
                         />
 
-                        <SongAudioPreview currentSong={currentSong} key={currentSong.track.id} targetVolume={targetVolume} />
+                        <SongAudioPreview
+                            currentSong={currentSong}
+                            key={currentSong.id + currentSong.provider.name}
+                            targetVolume={targetVolume}
+                        />
                         <SongAudioControls volume={targetVolume} setVolume={setVolume} />
 
                         <SongDragOverlay x={x} onDragEnd={handleDragEnd} />

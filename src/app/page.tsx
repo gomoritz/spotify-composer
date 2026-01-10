@@ -1,24 +1,39 @@
-"use client";
-
-import { useState, useEffect } from "react";
-import Composer from "@/components/composer/Composer";
-import Authorize from "@/components/authorization/Authorize";
-import { getAccessToken } from "@/spotify/authorization";
+"use client"
+import { useState, useEffect } from "react"
+import Composer from "@/components/composer/Composer"
+import Authorize from "@/components/authorization/Authorize"
+import { getAccessToken } from "@/spotify/authorization"
+import { isAppleMusicAuthorized, initMusicKit } from "@/apple/music"
 
 export default function HomePage() {
-  const [hasAccessToken, setHasAccessToken] = useState<boolean | null>(null);
+    const [hasAuthorization, setHasAuthorization] = useState<boolean | null>(null)
 
-  useEffect(() => {
-    setHasAccessToken(!!getAccessToken());
-  }, []);
+    useEffect(() => {
+        const checkAuth = async () => {
+            const spotifyAuth = !!getAccessToken()
 
-  if (hasAccessToken === null) {
-    return null; // or a loading spinner
-  }
+            // Initialize MusicKit to check its auth status
+            let appleAuth = false
+            try {
+                await initMusicKit()
+                appleAuth = isAppleMusicAuthorized()
+            } catch (e) {
+                console.error("Failed to init MusicKit", e)
+            }
 
-  if (!hasAccessToken) {
-    return <Authorize />;
-  }
+            setHasAuthorization(spotifyAuth || appleAuth)
+        }
 
-  return <Composer />;
+        checkAuth()
+    }, [])
+
+    if (hasAuthorization === null) {
+        return null // or a loading spinner
+    }
+
+    if (!hasAuthorization) {
+        return <Authorize />
+    }
+
+    return <Composer />
 }

@@ -1,6 +1,7 @@
 import { authorizationHeaders } from "./authorization"
 import { getProfile, getSavedSongs } from "./profile"
 import { Image, Playlist, PlaylistCollection, Song, SongCollection } from "@/types/spotify"
+import { GenericSong } from "@/types/music"
 
 export async function getPlaylists(next?: string): Promise<Playlist[]> {
     const response: PlaylistCollection = await fetch(next ?? "https://api.spotify.com/v1/me/playlists?limit=50", {
@@ -93,16 +94,17 @@ export async function createPlaylist(): Promise<Playlist> {
         headers: authorizationHeaders(),
         body: JSON.stringify({
             name: `${getRandomEmoji()} ${profile.display_name}'s Composed Playlist`,
-            description: "🔥 Generated with the Spotify Composer by incxption. 👉 Create your own one at spotify-composer.vercel.app!"
+            description:
+                "🔥 Generated with the Spotify Composer by incxption. 👉 Create your own one at spotify-composer.vercel.app!"
         })
     })
         .then(res => res.json())
         .catch(console.error)
 }
 
-export async function addSongsToPlaylist(playlistId: string, songs: Song[]): Promise<any> {
+export async function addSongsToPlaylist(playlistId: string, songs: GenericSong[]): Promise<any> {
     const copy = [...songs]
-    const fractions: Song[][] = []
+    const fractions: GenericSong[][] = []
     const promises: Promise<any>[] = []
 
     while (copy.length > 0) {
@@ -118,7 +120,7 @@ export async function addSongsToPlaylist(playlistId: string, songs: Song[]): Pro
                     ...authorizationHeaders()
                 },
                 body: JSON.stringify({
-                    uris: fraction.map(song => song.track.uri)
+                    uris: fraction.map(song => song.uri).filter(uri => !!uri)
                 })
             })
         )
