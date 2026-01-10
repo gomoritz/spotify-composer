@@ -1,14 +1,47 @@
 import { motion, useMotionValue, useTransform } from "motion/react"
-import React from "react"
+import React, { useEffect, useRef, useState } from "react"
 import { GenericPlaylist } from "@/types/music"
+import { getAppleMusicPlaylistTrackCount } from "@/apple/music"
 
 interface Props {
     playlist: GenericPlaylist
     isSelected: boolean
     togglePlaylist: (playlist: GenericPlaylist) => void
+    onTrackCountLoaded: (id: string, providerName: string, count: number) => void
 }
 
-const PlaylistCard: React.FC<Props> = ({ playlist, isSelected, togglePlaylist }) => {
+const PlaylistCard: React.FC<Props> = ({ playlist, isSelected, togglePlaylist, onTrackCountLoaded }) => {
+    const containerRef = useRef<HTMLDivElement>(null)
+    const [fetching, setFetching] = useState(false)
+
+    useEffect(() => {
+        if (playlist.provider.name !== "apple-music" || playlist.trackCount !== undefined) {
+            return
+        }
+
+        const observer = new IntersectionObserver(
+            entries => {
+                if (entries[0].isIntersecting && !fetching) {
+                    setFetching(true)
+                    getAppleMusicPlaylistTrackCount(playlist.id).then(count => {
+                        if (count !== undefined) {
+                            onTrackCountLoaded(playlist.id, playlist.provider.name, count)
+                        }
+                        setFetching(false)
+                    })
+                    observer.disconnect()
+                }
+            },
+            { threshold: 0.1 }
+        )
+
+        if (containerRef.current) {
+            observer.observe(containerRef.current)
+        }
+
+        return () => observer.disconnect()
+    }, [playlist.id, playlist.provider.name, playlist.trackCount, fetching, onTrackCountLoaded])
+
     const cardVariants = {
         selected: { scale: 1.01, opacity: 1 },
         unselected: { scale: 0.96, opacity: 0.85 }
@@ -29,6 +62,7 @@ const PlaylistCard: React.FC<Props> = ({ playlist, isSelected, togglePlaylist })
 
     return (
         <motion.div
+            ref={containerRef}
             className={
                 "bg-white shadow-md rounded-xl flex flex-col group " +
                 "justify-between cursor-pointer transition-all overflow-hidden " +
@@ -79,7 +113,9 @@ const PlaylistCard: React.FC<Props> = ({ playlist, isSelected, togglePlaylist })
             </div>
             <div className="w-full flex flex-row justify-between text-md tracking-tight px-3 py-2 flex-grow">
                 <p className="font-semibold truncate whitespace-nowrap pr-2">{playlist.name}</p>
-                <p className="text-neutral-600 flex-nowrap whitespace-nowrap">{playlist.trackCount} songs</p>
+                <p className="text-neutral-600 flex-nowrap whitespace-nowrap">
+                    {playlist.trackCount !== undefined ? `${playlist.trackCount} songs` : "..."}
+                </p>
             </div>
         </motion.div>
     )

@@ -25,6 +25,13 @@ const PlaylistPicker: React.FC<Props> = ({ setIncludedPlaylists }) => {
     const [filter, setFilter] = useState<Filter>("all")
     const [loading, setLoading] = useState<boolean>(true)
 
+    const updateTrackCount = (id: string, providerName: string, count: number) => {
+        setPlaylists(prev => prev.map(p => (p.id === id && p.provider.name === providerName ? { ...p, trackCount: count } : p)))
+        setSelectedPlaylists(prev =>
+            prev.map(p => (p.id === id && p.provider.name === providerName ? { ...p, trackCount: count } : p))
+        )
+    }
+
     const filteredPlaylists = playlists.filter(p => {
         if (filter === "owned")
             return p.provider.name === "apple-music" || p.id === "library-pseudo" || (p.provider.name === "spotify" && true) // Simplified for now as profile check is Spotify specific
@@ -38,8 +45,8 @@ const PlaylistPicker: React.FC<Props> = ({ setIncludedPlaylists }) => {
             try {
                 if (getAccessToken()) {
                     try {
-                        const spotifyPlaylists = await getPlaylists()
                         allPlaylists.push(mapSpotifyPlaylist(await buildPseudoPlaylistFromLibrary()))
+                        const spotifyPlaylists = await getPlaylists()
                         allPlaylists.push(...spotifyPlaylists.map(mapSpotifyPlaylist))
                     } catch (e) {
                         console.error("Error fetching Spotify playlists", e)
@@ -97,10 +104,15 @@ const PlaylistPicker: React.FC<Props> = ({ setIncludedPlaylists }) => {
                     <div className="max-w-screen-lg w-full mx-auto mb-7 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 px-8 py-7">
                         {filteredPlaylists.map(playlist => (
                             <PlaylistCard
-                                key={playlist.id}
-                                isSelected={!!selectedPlaylists.find(it => it.id === playlist.id)}
+                                key={playlist.id + playlist.provider.name}
+                                isSelected={
+                                    !!selectedPlaylists.find(
+                                        it => it.id === playlist.id && it.provider.name === playlist.provider.name
+                                    )
+                                }
                                 playlist={playlist}
                                 togglePlaylist={togglePlaylist}
+                                onTrackCountLoaded={updateTrackCount}
                             />
                         ))}
                     </div>

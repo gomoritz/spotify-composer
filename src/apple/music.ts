@@ -51,29 +51,138 @@ export async function unauthorizeAppleMusic() {
 
 export async function getAppleMusicPlaylists(): Promise<GenericPlaylist[]> {
     const music = await initMusicKit()
-    const response: any = await music.api.music("v1/me/library/playlists", { limit: 100 })
-    return (response.data.data || []).map(mapAppleMusicPlaylist)
+    let allPlaylists: any[] = []
+    let url = "https://api.music.apple.com/v1/me/library/playlists?limit=100&sort=dateAdded"
+
+    while (url) {
+        const response = await fetchAppleMusic(url, music)
+
+        if (!response.ok) {
+            const error = await response.json().catch(() => ({}))
+            console.error("Error fetching Apple Music playlists:", error)
+            break
+        }
+
+        const data = await response.json()
+        allPlaylists = [...allPlaylists, ...(data.data || [])]
+
+        if (data.next) {
+            url = data.next.startsWith("http") ? data.next : `https://api.music.apple.com${data.next}`
+        } else {
+            url = ""
+        }
+    }
+
+    // Reverse to show newest first if sorted by dateAdded ascending
+    return allPlaylists.map(mapAppleMusicPlaylist).reverse()
+}
+
+export async function getAppleMusicPlaylistTrackCount(playlistId: string): Promise<number | undefined> {
+    const music = await initMusicKit()
+    try {
+        const response = await fetchAppleMusic(
+            `https://api.music.apple.com/v1/me/library/playlists/${playlistId}/tracks?limit=1`,
+            music
+        )
+
+        if (response.ok) {
+            const data = await response.json()
+            if (data.meta && typeof data.meta.total === "number") {
+                return data.meta.total
+            }
+        }
+    } catch (e) {
+        console.error(`Failed to fetch track count for playlist ${playlistId}`, e)
+    }
+    return undefined
+}
+
+/**
+ * A wrapper around fetch that adds Apple Music headers and handles rate limiting.
+ */
+async function fetchAppleMusic(url: string, music: any, options: RequestInit = {}): Promise<Response> {
+    const makeRequest = () =>
+        fetch(url, {
+            ...options,
+            headers: {
+                Authorization: `Bearer ${music.developerToken}`,
+                "Music-User-Token": music.musicUserToken,
+                ...options.headers
+            }
+        })
+
+    let response = await makeRequest()
+
+    // Handle rate limiting (429 Too Many Requests)
+    if (response.status === 429) {
+        const retryAfter = response.headers.get("Retry-After")
+        const waitTime = retryAfter ? parseInt(retryAfter) * 1000 : 2000
+        await new Promise(resolve => setTimeout(resolve, waitTime))
+        response = await makeRequest()
+    }
+
+    return response
 }
 
 export async function getAppleMusicPlaylistTracks(id: string): Promise<GenericSong[]> {
     const music = await initMusicKit()
-    const response: any = await music.api.music(`v1/me/library/playlists/${id}/tracks`, { limit: 100 })
-    return (response.data.data || []).map(mapAppleMusicSong)
+    let allTracks: any[] = []
+    let url = `https://api.music.apple.com/v1/me/library/playlists/${id}/tracks?limit=100`
+
+    while (url) {
+        const response = await fetchAppleMusic(url, music)
+
+        if (!response.ok) {
+            const error = await response.json().catch(() => ({}))
+            console.error(`Error fetching Apple Music playlist tracks for ${id}:`, error)
+            break
+        }
+
+        const data = await response.json()
+        allTracks = [...allTracks, ...(data.data || [])]
+
+        if (data.next) {
+            url = data.next.startsWith("http") ? data.next : `https://api.music.apple.com${data.next}`
+        } else {
+            url = ""
+        }
+    }
+
+    return allTracks.map(mapAppleMusicSong)
 }
 
 export async function getAppleMusicSavedSongs(): Promise<GenericSong[]> {
     const music = await initMusicKit()
-    const response: any = await music.api.music("v1/me/library/songs", { limit: 100 })
-    return (response.data.data || []).map(mapAppleMusicSong)
+    let allSongs: any[] = []
+    let url = "https://api.music.apple.com/v1/me/library/songs?limit=100"
+
+    while (url) {
+        const response = await fetchAppleMusic(url, music)
+
+        if (!response.ok) {
+            const error = await response.json().catch(() => ({}))
+            console.error("Error fetching Apple Music saved songs:", error)
+            break
+        }
+
+        const data = await response.json()
+        allSongs = [...allSongs, ...(data.data || [])]
+
+        if (data.next) {
+            url = data.next.startsWith("http") ? data.next : `https://api.music.apple.com${data.next}`
+        } else {
+            url = ""
+        }
+    }
+
+    return allSongs.map(mapAppleMusicSong)
 }
 
 export async function createAppleMusicPlaylist(name: string, description: string): Promise<string> {
     const music = await initMusicKit()
-    const response = await fetch("https://api.music.apple.com/v1/me/library/playlists", {
+    const response = await fetchAppleMusic("https://api.music.apple.com/v1/me/library/playlists", music, {
         method: "POST",
         headers: {
-            Authorization: `Bearer ${music.developerToken}`,
-            "Music-User-Token": music.musicUserToken,
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
@@ -98,12 +207,9 @@ export async function addSongsToAppleMusicPlaylist(playlistId: string, songs: Ge
         id: song.id,
         type: "songs"
     }))
-
-    const response = await fetch(`https://api.music.apple.com/v1/me/library/playlists/${playlistId}/tracks`, {
+    const response = await fetchAppleMusic(`https://api.music.apple.com/v1/me/library/playlists/${playlistId}/tracks`, music, {
         method: "POST",
         headers: {
-            Authorization: `Bearer ${music.developerToken}`,
-            "Music-User-Token": music.musicUserToken,
             "Content-Type": "application/json"
         },
         body: JSON.stringify({

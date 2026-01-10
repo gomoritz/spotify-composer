@@ -56,12 +56,19 @@ export function mapSpotifySong(s: SpotifySong): GenericSong {
 }
 
 export function mapAppleMusicPlaylist(p: any): GenericPlaylist {
+    const attributes = p.attributes || {}
+    const relationships = p.relationships || {}
+
     return {
         id: p.id,
-        name: p.attributes.name,
-        description: p.attributes.description?.standard,
-        artworkUrl: p.attributes.artwork?.url?.replace("{w}", "300").replace("{h}", "300"),
-        trackCount: p.attributes.trackCount ?? p.relationships?.tracks?.meta?.total ?? p.relationships?.tracks?.data?.length ?? 0,
+        name: attributes.name,
+        description: attributes.description?.standard,
+        artworkUrl: attributes.artwork?.url?.replace("{w}", "300").replace("{h}", "300"),
+        trackCount:
+            attributes.trackCount ??
+            attributes["track-count"] ??
+            relationships.tracks?.meta?.total ??
+            relationships.tracks?.data?.length,
         provider: { name: "apple-music", id: "apple-music" }
     }
 }
