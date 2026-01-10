@@ -34,6 +34,11 @@ export async function requestAccessTokenFromPKCE(code: string) {
     return await response.json()
 }
 
+export function unauthorizeSpotify() {
+    localStorage.removeItem("access_token")
+    localStorage.removeItem("expires_at")
+}
+
 export function authorizationHeaders() {
     return { Authorization: "Bearer " + getAccessToken() }
 }

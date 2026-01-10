@@ -3,8 +3,8 @@
 import React, { useState, useEffect, useRef } from "react"
 import useAsync from "@/utils/useAsync"
 import { getProfile } from "@/spotify/profile"
-import { isAppleMusicAuthorized, authorizeAppleMusic, initMusicKit } from "@/apple/music"
-import { authorizeSpotify } from "@/spotify/authorization"
+import { isAppleMusicAuthorized, authorizeAppleMusic, unauthorizeAppleMusic, initMusicKit } from "@/apple/music"
+import { authorizeSpotify, unauthorizeSpotify } from "@/spotify/authorization"
 import { motion, AnimatePresence } from "motion/react"
 import { FaChevronDown, FaSpotify, FaApple, FaCheckCircle } from "react-icons/fa"
 
@@ -40,13 +40,9 @@ const Header: React.FC<Props> = () => {
 
     const isSpotifyAuthorized = spotifyState === "done" && !!profile
 
-    let buttonText = "Login"
-    if (isSpotifyAuthorized && appleAuthorized) {
-        buttonText = "Spotify + Apple Music"
-    } else if (isSpotifyAuthorized) {
-        buttonText = profile.display_name
-    } else if (appleAuthorized) {
-        buttonText = "Apple Music"
+    let buttonText = "Connect"
+    if (isSpotifyAuthorized || appleAuthorized) {
+        buttonText = "Connected"
     }
 
     function reload() {
@@ -87,9 +83,18 @@ const Header: React.FC<Props> = () => {
                             >
                                 <div className="p-2 space-y-1">
                                     <button
-                                        onClick={() => !isSpotifyAuthorized && authorizeSpotify()}
+                                        onClick={() => {
+                                            if (isSpotifyAuthorized) {
+                                                unauthorizeSpotify()
+                                                window.location.reload()
+                                            } else {
+                                                authorizeSpotify()
+                                            }
+                                        }}
                                         className={`w-full flex items-center justify-between px-3 py-2 rounded-md transition-colors ${
-                                            isSpotifyAuthorized ? "bg-green-50 text-green-700" : "hover:bg-gray-100 text-gray-700"
+                                            isSpotifyAuthorized
+                                                ? "bg-green-50 text-green-700 hover:bg-red-50 hover:text-red-700"
+                                                : "hover:bg-gray-100 text-gray-700"
                                         }`}
                                     >
                                         <div className="flex items-center gap-2">
@@ -100,11 +105,17 @@ const Header: React.FC<Props> = () => {
                                     </button>
 
                                     <button
-                                        onClick={() =>
-                                            !appleAuthorized && authorizeAppleMusic().then(() => window.location.reload())
-                                        }
+                                        onClick={() => {
+                                            if (appleAuthorized) {
+                                                unauthorizeAppleMusic().then(() => window.location.reload())
+                                            } else {
+                                                authorizeAppleMusic().then(() => window.location.reload())
+                                            }
+                                        }}
                                         className={`w-full flex items-center justify-between px-3 py-2 rounded-md transition-colors ${
-                                            appleAuthorized ? "bg-red-50 text-red-700" : "hover:bg-gray-100 text-gray-700"
+                                            appleAuthorized
+                                                ? "bg-red-50 text-red-700 hover:bg-red-100"
+                                                : "hover:bg-gray-100 text-gray-700"
                                         }`}
                                     >
                                         <div className="flex items-center gap-2">
