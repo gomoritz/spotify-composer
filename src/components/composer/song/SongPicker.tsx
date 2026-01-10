@@ -159,7 +159,7 @@ function writeToLocalStorage(volume: number) {
 function readFromLocalStorage(): number | null {
     const item = localStorage.getItem("volume")
     if (item) {
-        const number = parseInt(item)
+        const number = parseFloat(item)
         return isNaN(number) ? null : number
     } else return null
 }

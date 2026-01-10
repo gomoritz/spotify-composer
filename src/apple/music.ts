@@ -127,7 +127,7 @@ async function fetchAppleMusic(url: string, music: any, options: RequestInit = {
 export async function getAppleMusicPlaylistTracks(id: string): Promise<GenericSong[]> {
     const music = await initMusicKit()
     let allTracks: any[] = []
-    let url = `https://api.music.apple.com/v1/me/library/playlists/${id}/tracks?limit=100`
+    let url = `https://api.music.apple.com/v1/me/library/playlists/${id}/tracks?limit=100&include=catalog`
 
     while (url) {
         const response = await fetchAppleMusic(url, music)
@@ -154,7 +154,7 @@ export async function getAppleMusicPlaylistTracks(id: string): Promise<GenericSo
 export async function getAppleMusicSavedSongs(): Promise<GenericSong[]> {
     const music = await initMusicKit()
     let allSongs: any[] = []
-    let url = "https://api.music.apple.com/v1/me/library/songs?limit=100"
+    let url = "https://api.music.apple.com/v1/me/library/songs?limit=100&include=catalog"
 
     while (url) {
         const response = await fetchAppleMusic(url, music)

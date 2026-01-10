@@ -22,7 +22,11 @@ const SongAudioPreview: React.FC<Props> = ({ currentSong, targetVolume }) => {
             to: targetVolume,
             steps: 10,
             duration: 100,
-            action: volume => (audioRef.current!.volume = coerceVolume(volume))
+            action: volume => {
+                if (audioRef.current) {
+                    audioRef.current.volume = coerceVolume(volume)
+                }
+            }
         })
     )
 
@@ -32,7 +36,11 @@ const SongAudioPreview: React.FC<Props> = ({ currentSong, targetVolume }) => {
             to: 0,
             steps: 10,
             duration: 100,
-            action: volume => (audioRef.current!.volume = coerceVolume(volume))
+            action: volume => {
+                if (audioRef.current) {
+                    audioRef.current.volume = coerceVolume(volume)
+                }
+            }
         })
     )
 
@@ -75,7 +83,7 @@ const SongAudioPreview: React.FC<Props> = ({ currentSong, targetVolume }) => {
                 return
             }
 
-            await fadeInRef.current!.start()
+            await fadeInRef.current.start()
         }, 500)
 
         // kill progress listener and stop playback

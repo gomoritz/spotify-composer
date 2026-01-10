@@ -74,15 +74,18 @@ export function mapAppleMusicPlaylist(p: any): GenericPlaylist {
 }
 
 export function mapAppleMusicSong(s: any): GenericSong {
+    const attributes = s.attributes || {}
+    const catalogData = s.relationships?.catalog?.data?.[0]?.attributes || {}
+
     return {
         id: s.id,
-        name: s.attributes.name,
-        artist: s.attributes.artistName,
-        album: s.attributes.albumName,
-        artworkUrl: s.attributes.artwork?.url?.replace("{w}", "300").replace("{h}", "300"),
-        isrc: s.attributes.isrc,
-        previewUrl: s.attributes.previews?.[0]?.url,
-        durationMs: s.attributes.durationInMillis,
+        name: attributes.name,
+        artist: attributes.artistName,
+        album: attributes.albumName,
+        artworkUrl: attributes.artwork?.url?.replace("{w}", "300").replace("{h}", "300"),
+        isrc: attributes.isrc,
+        previewUrl: attributes.previews?.[0]?.url || catalogData.previews?.[0]?.url,
+        durationMs: attributes.durationInMillis,
         provider: { name: "apple-music", id: "apple-music" }
     }
 }
