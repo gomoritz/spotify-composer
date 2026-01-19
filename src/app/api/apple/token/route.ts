@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server"
 import * as jose from "jose"
-import fs from "fs"
-import path from "path"
 
 export async function GET() {
     const TEAM_ID = process.env.APPLE_TEAM_ID
@@ -12,16 +10,6 @@ export async function GET() {
     }
 
     let privateKeyString = process.env.APPLE_PRIVATE_KEY
-    if (!privateKeyString) {
-        try {
-            const keyPath = path.join(process.cwd(), "config", `AuthKey_${KEY_ID}.p8`)
-            if (fs.existsSync(keyPath)) {
-                privateKeyString = fs.readFileSync(keyPath, "utf8")
-            }
-        } catch (e) {
-            console.error("Error reading Apple private key file:", e)
-        }
-    }
 
     if (!privateKeyString) {
         return NextResponse.json(
