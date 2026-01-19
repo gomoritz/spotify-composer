@@ -1,16 +1,16 @@
 "use client"
 
 import React, { useEffect, useRef, useState } from "react"
-import { Image, Song } from "@/types/spotify"
+import { GenericSong } from "@/types/music"
 
 type Props = {
-    songs: Song[]
+    songs: GenericSong[]
 }
 
 const PlaylistCover: React.FC<Props> = ({ songs }) => {
     const canvasSize = 250
     const canvasRef = useRef<HTMLCanvasElement | null>(null)
-    const [images, setImages] = useState<(Image | null)[]>([])
+    const [images, setImages] = useState<(string | null)[]>([])
     const [imageIndex, setImageIndex] = useState(0)
     useEffect(() => {
         const canvas = canvasRef.current
@@ -32,7 +32,7 @@ const PlaylistCover: React.FC<Props> = ({ songs }) => {
                     }
                     const img = document.createElement("img")
                     img.crossOrigin = "anonymous"
-                    img.src = image!.url
+                    img.src = image!
                     img.addEventListener("load", () => {
                         ctx.drawImage(img, 0, 0, img.width, img.height, left, top, canvasSize / 2, canvasSize / 2)
                     })
@@ -43,7 +43,7 @@ const PlaylistCover: React.FC<Props> = ({ songs }) => {
                 if (image) {
                     const img = document.createElement("img")
                     img.crossOrigin = "anonymous"
-                    img.src = image.url
+                    img.src = image
                     img.addEventListener("load", () => {
                         ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, canvasSize, canvasSize)
                     })
@@ -54,23 +54,22 @@ const PlaylistCover: React.FC<Props> = ({ songs }) => {
 
     useEffect(() => {
         function resolveImages() {
-            const uniqueSongs: Song[] = []
+            const uniqueImages: string[] = []
             for (let song of songs) {
-                if (!uniqueSongs.find(it => it.track.album.id === song.track.album.id) && uniqueSongs.length < 4) {
-                    uniqueSongs.push(song)
+                if (song.artworkUrl && !uniqueImages.includes(song.artworkUrl) && uniqueImages.length < 4) {
+                    uniqueImages.push(song.artworkUrl)
                 }
             }
-            return uniqueSongs.map(item => item.track.album.images[0]) as Image[]
+            return uniqueImages
         }
         setImages(resolveImages())
     }, [songs])
 
-    function changeCoverImage(e: React.MouseEvent<HTMLCanvasElement, MouseEvent>, image: Image | null) {
-        console.log("Set image:", image)
-        console.log(imageIndex)
+    function changeCoverImage(e: React.MouseEvent<HTMLCanvasElement, MouseEvent>, imageUrl: string | undefined) {
+        if (!imageUrl) return
         setImages(prev => {
             const prevImages = [...prev]
-            prevImages[imageIndex] = image
+            prevImages[imageIndex] = imageUrl
             return prevImages
         })
         setImageIndex(index => (index === 3 ? 0 : index + 1))
@@ -79,9 +78,7 @@ const PlaylistCover: React.FC<Props> = ({ songs }) => {
     return (
         <>
             <canvas
-                onClick={e =>
-                    changeCoverImage(e, songs[Math.floor(Math.random() * songs.length)].track.album.images[0])
-                }
+                onClick={e => changeCoverImage(e, songs[Math.floor(Math.random() * songs.length)].artworkUrl)}
                 className="mx-auto"
                 ref={canvasRef}
                 width={canvasSize}

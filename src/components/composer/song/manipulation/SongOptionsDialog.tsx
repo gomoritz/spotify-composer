@@ -1,13 +1,13 @@
 import React from "react"
 import { motion, Variants } from "motion/react"
 import DialogButton from "@/components/composer/song/DialogButton"
-import { Song } from "@/types/spotify"
+import { GenericSong } from "@/types/music"
 
 type Props = {
     setVisible(value: boolean): void
     isVisible: boolean
 
-    setSongs: React.Dispatch<React.SetStateAction<Song[] | undefined>>
+    setSongs: React.Dispatch<React.SetStateAction<GenericSong[] | undefined>>
     setTaken: React.Dispatch<React.SetStateAction<number[]>>
     setIndex: React.Dispatch<React.SetStateAction<number>>
     index: number
@@ -53,7 +53,7 @@ const SongOptionsDialog: React.FC<Props> = ({
         }
     }
 
-    function manipulateRemaining(action: (input: Song[]) => Song[]) {
+    function manipulateRemaining(action: (input: GenericSong[]) => GenericSong[]) {
         setSongs(prev => {
             const done = prev!.slice(0, index)
             const remaining = prev!.slice(index)
@@ -63,20 +63,21 @@ const SongOptionsDialog: React.FC<Props> = ({
         })
     }
 
-    function sortBy(transform: (song: Song) => string | number) {
+    function sortBy(transform: (song: GenericSong) => string | number) {
         manipulateRemaining(input =>
             [...input].sort((a, b) => {
                 const ta = transform(a)
                 const tb = transform(b)
+                if (ta === undefined || tb === undefined) return 0
                 return typeof ta === "string" && typeof tb === "string" ? ta.localeCompare(tb) : tb > ta ? 1 : tb < ta ? -1 : 0
             })
         )
     }
 
     const shuffle = () => manipulateRemaining(input => shuffleArray([...input]))
-    const sortByArtist = () => sortBy(song => song.track.artists[0].name)
-    const sortByTitle = () => sortBy(song => song.track.name)
-    const sortByPopularity = () => sortBy(song => song.track.popularity)
+    const sortByArtist = () => sortBy(song => song.artist)
+    const sortByTitle = () => sortBy(song => song.name)
+    const sortByPopularity = () => sortBy(song => song.popularity || 0)
     const reverse = () => manipulateRemaining(input => input.reverse())
 
     const restart = () => {

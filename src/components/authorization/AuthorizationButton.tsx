@@ -1,33 +1,22 @@
 import React from "react"
 import { motion } from "motion/react"
-import constants from "@/spotify/constants"
-import { getCodeChallenge } from "@/utils/pkce"
+import { authorizeSpotify } from "@/spotify/authorization"
+import { FaSpotify } from "react-icons/fa"
 
 const AuthorizationButton: React.FC = () => {
     const requestAuthorization = async () => {
-        window.location.href =
-            "https://accounts.spotify.com/authorize" +
-            "?client_id=" +
-            constants.client_id +
-            "&response_type=" +
-            constants.response_type +
-            "&redirect_uri=" +
-            constants.redirect_uri +
-            "&scope=" +
-            constants.scopes +
-            "&code_challenge_method=" +
-            constants.code_challenge_method +
-            "&code_challenge=" +
-            (await getCodeChallenge())
+        await authorizeSpotify()
     }
 
     return (
-        <motion.div className="bg-emerald-500 border-emerald-400 border-2 shadow-sm rounded-md py-2 px-5 text-white text-md cursor-pointer"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={requestAuthorization}
+        <motion.div
+            className="flex items-center gap-3 bg-[#1DB954] hover:bg-[#1ed760] text-white py-3 px-8 rounded-full font-bold text-lg shadow-lg cursor-pointer transition-colors"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={requestAuthorization}
         >
-            Login with <b className="font-semibold">Spotify</b><br/>
+            <FaSpotify size={24} />
+            Connect Spotify
         </motion.div>
     )
 }

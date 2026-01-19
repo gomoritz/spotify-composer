@@ -17,7 +17,7 @@ const LoadingScreen: React.FC<Props> = ({ title, message }) => {
             <div className="my-20">
                 {[0, 1, 2].map(i => (
                     <motion.span
-                        key={i} className="w-5 h-5 mx-1 rounded-full bg-emerald-500 inline-block shadow-md"
+                        key={i} className="w-5 h-5 mx-1 rounded-full bg-purple-600 inline-block shadow-md"
                         initial={{ y: -15 }}
                         animate={{ y: [-15, 15, -15] }}
                         transition={{

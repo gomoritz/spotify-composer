@@ -1,15 +1,16 @@
 import React, { useRef } from "react"
 import { motion, MotionValue, useTransform } from "motion/react"
-import { Song } from "@/types/spotify"
+import { GenericSong } from "@/types/music"
+import { FaSpotify, FaApple } from "react-icons/fa"
 
 type Props = {
-    currentSong: Song
+    currentSong: GenericSong
     x: MotionValue<number>
     left: number
 }
 
 const SongDetails: React.FC<Props> = ({ currentSong, x, left }) => {
-    const background = useTransform(x, [-150, 0, 150], ["rgb(95,15,15)", "#000000", "rgb(9,55,22)"])
+    const background = useTransform(x, [-150, 0, 150], ["rgb(95,15,15)", "#000000", "rgb(55, 9, 95)"])
     const dragGradientRef = useRef<HTMLDivElement | null>(null)
 
     background.onChange(value => {
@@ -17,13 +18,6 @@ const SongDetails: React.FC<Props> = ({ currentSong, x, left }) => {
             dragGradientRef.current!.style.background = `linear-gradient(to top, ${value} 15%, transparent 115%)`
         }
     })
-
-    const artists = currentSong.track.artists
-    const artistsText =
-        artists
-            .slice(0, 4)
-            .map(it => it.name)
-            .join(", ") + (artists.length > 4 ? ` and ${artists.length - 4} more` : "")
 
     return (
         <motion.div
@@ -36,8 +30,15 @@ const SongDetails: React.FC<Props> = ({ currentSong, x, left }) => {
                 max-h-32 overflow-hidden"
             >
                 <p className="text-white text-center tracking-tight mb-3">{left} songs left</p>
-                <h1 className="text-2xl text-white text-center font-bold tracking-tight">{currentSong.track.name}</h1>
-                <p className="text-xl text-white text-center opacity-70 tracking-tight">{artistsText}</p>
+                <h1 className="text-2xl text-white text-center font-bold tracking-tight">{currentSong.name}</h1>
+                <div className="flex items-center justify-center gap-2 opacity-70">
+                    {currentSong.provider.name === "spotify" ? (
+                        <FaSpotify className="text-[#1DB954] text-lg" title="Spotify" />
+                    ) : (
+                        <FaApple className="text-[#FA2D48] text-lg" title="Apple Music" />
+                    )}
+                    <p className="text-xl text-white text-center tracking-tight">{currentSong.artist}</p>
+                </div>
             </div>
         </motion.div>
     )

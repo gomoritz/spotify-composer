@@ -47,6 +47,7 @@ export interface Artist {
 export interface Album {
     images: (Image | null)[]
     id: string
+    name: string
 }
 
 interface Image {

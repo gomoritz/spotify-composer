@@ -1,5 +1,5 @@
 import constants from "@/spotify/constants"
-import { getCodeVerifier } from "@/utils/pkce"
+import { getCodeChallenge, getCodeVerifier } from "@/utils/pkce"
 
 export function getAccessToken(): string | null {
     const accessToken = localStorage.getItem("access_token")
@@ -34,6 +34,28 @@ export async function requestAccessTokenFromPKCE(code: string) {
     return await response.json()
 }
 
+export function unauthorizeSpotify() {
+    localStorage.removeItem("access_token")
+    localStorage.removeItem("expires_at")
+}
+
 export function authorizationHeaders() {
-    return { "Authorization": "Bearer " + getAccessToken() }
+    return { Authorization: "Bearer " + getAccessToken() }
+}
+
+export async function authorizeSpotify() {
+    window.location.href =
+        "https://accounts.spotify.com/authorize" +
+        "?client_id=" +
+        constants.client_id +
+        "&response_type=" +
+        constants.response_type +
+        "&redirect_uri=" +
+        constants.redirect_uri +
+        "&scope=" +
+        constants.scopes +
+        "&code_challenge_method=" +
+        constants.code_challenge_method +
+        "&code_challenge=" +
+        (await getCodeChallenge())
 }

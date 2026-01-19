@@ -1,6 +1,7 @@
 import { authorizationHeaders } from "./authorization"
 import { getProfile, getSavedSongs } from "./profile"
 import { Image, Playlist, PlaylistCollection, Song, SongCollection } from "@/types/spotify"
+import { GenericSong } from "@/types/music"
 
 export async function getPlaylists(next?: string): Promise<Playlist[]> {
     const response: PlaylistCollection = await fetch(next ?? "https://api.spotify.com/v1/me/playlists?limit=50", {
@@ -17,7 +18,7 @@ export async function getPlaylists(next?: string): Promise<Playlist[]> {
 }
 
 export async function getPlaylistTracks(id: string, next?: string): Promise<Song[]> {
-    const response: SongCollection = await fetch(next ?? `https://api.spotify.com/v1/playlists/${id}/tracks`, {
+    const response: SongCollection = await fetch(next ?? `https://api.spotify.com/v1/playlists/${id}/tracks?market=DE`, {
         headers: authorizationHeaders()
     })
         .then(res => res.json())
@@ -93,16 +94,17 @@ export async function createPlaylist(): Promise<Playlist> {
         headers: authorizationHeaders(),
         body: JSON.stringify({
             name: `${getRandomEmoji()} ${profile.display_name}'s Composed Playlist`,
-            description: "🔥 Generated with the Spotify Composer by incxption. 👉 Create your own one at spotify-composer.vercel.app!"
+            description:
+                "🔥 Generated with the Music Composer by incxption. 👉 Create your own one at spotify-composer.vercel.app!"
         })
     })
         .then(res => res.json())
         .catch(console.error)
 }
 
-export async function addSongsToPlaylist(playlistId: string, songs: Song[]): Promise<any> {
+export async function addSongsToPlaylist(playlistId: string, songs: GenericSong[]): Promise<any> {
     const copy = [...songs]
-    const fractions: Song[][] = []
+    const fractions: GenericSong[][] = []
     const promises: Promise<any>[] = []
 
     while (copy.length > 0) {
@@ -118,13 +120,66 @@ export async function addSongsToPlaylist(playlistId: string, songs: Song[]): Pro
                     ...authorizationHeaders()
                 },
                 body: JSON.stringify({
-                    uris: fraction.map(song => song.track.uri)
+                    uris: fraction.map(song => song.uri).filter(uri => !!uri)
                 })
             })
         )
     }
 
     return Promise.all(promises)
+}
+
+export async function searchSpotifyByISRC(isrc: string, albumName?: string): Promise<string | null> {
+    console.log("Searching Spotify for ISRC", isrc)
+    const response = await fetch(`https://api.spotify.com/v1/search?q=isrc:${isrc}&type=track&limit=10&market=DE`, {
+        // TODO: SET SCOPE user-read-private and then use "market=from_token"
+        headers: authorizationHeaders()
+    })
+        .then(res => res.json())
+        .catch(console.error)
+
+    if (response && response.tracks && response.tracks.items && response.tracks.items.length > 0) {
+        if (albumName) {
+            const lowerAlbum = albumName.toLowerCase()
+            const bestMatch = response.tracks.items.find((item: any) => item.album?.name?.toLowerCase() === lowerAlbum)
+            if (bestMatch) return bestMatch.uri
+
+            const partialMatch = response.tracks.items.find(
+                (item: any) =>
+                    item.album?.name?.toLowerCase().includes(lowerAlbum) || lowerAlbum.includes(item.album?.name?.toLowerCase())
+            )
+            if (partialMatch) return partialMatch.uri
+        }
+        return response.tracks.items[0].uri
+    }
+
+    return null
+}
+
+export async function searchSpotifyByMetadata(name: string, artist: string, albumName?: string): Promise<string | null> {
+    const query = encodeURIComponent(`track:${name} artist:${artist}`)
+    const response = await fetch(`https://api.spotify.com/v1/search?q=${query}&type=track&limit=10&market=DE`, {
+        headers: authorizationHeaders()
+    })
+        .then(res => res.json())
+        .catch(console.error)
+
+    if (response && response.tracks && response.tracks.items && response.tracks.items.length > 0) {
+        if (albumName) {
+            const lowerAlbum = albumName.toLowerCase()
+            const bestMatch = response.tracks.items.find((item: any) => item.album?.name?.toLowerCase() === lowerAlbum)
+            if (bestMatch) return bestMatch.uri
+
+            const partialMatch = response.tracks.items.find(
+                (item: any) =>
+                    item.album?.name?.toLowerCase().includes(lowerAlbum) || lowerAlbum.includes(item.album?.name?.toLowerCase())
+            )
+            if (partialMatch) return partialMatch.uri
+        }
+        return response.tracks.items[0].uri
+    }
+
+    return null
 }
 
 function getRandomEmoji() {
