@@ -1,12 +1,15 @@
 "use client"
 import { useState, useEffect } from "react"
 import Composer from "@/components/composer/Composer"
+import Splitter from "@/components/splitter/Splitter"
 import Authorize from "@/components/authorization/Authorize"
 import { getAccessToken } from "@/spotify/authorization"
 import { isAppleMusicAuthorized, initMusicKit } from "@/apple/music"
+import ModeSelection from "@/components/ModeSelection"
 
 export default function HomePage() {
     const [hasAuthorization, setHasAuthorization] = useState<boolean | null>(null)
+    const [mode, setMode] = useState<"compose" | "split" | null>(null)
 
     useEffect(() => {
         const checkAuth = async () => {
@@ -33,6 +36,14 @@ export default function HomePage() {
 
     if (!hasAuthorization) {
         return <Authorize />
+    }
+
+    if (!mode) {
+        return <ModeSelection setMode={setMode} />
+    }
+
+    if (mode === "split") {
+        return <Splitter />
     }
 
     return <Composer />
